@@ -6,7 +6,6 @@ const styles = StyleSheet.create({
     position: "relative",
     height: 35,
     borderRadius: 6,
-    marginTop: 20,
     marginLeft: "auto",
     marginRight: "auto",
     alignSelf: "stretch",
