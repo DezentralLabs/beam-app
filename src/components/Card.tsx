@@ -13,6 +13,7 @@ const Card = (props: ICardProps) => (
 
 const styles = StyleSheet.create({
   card: {
+    backgroundColor: "white",
     borderWidth: 1,
     borderRadius: 2,
     borderColor: "#ddd",
