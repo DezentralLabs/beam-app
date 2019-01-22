@@ -136,29 +136,21 @@ export default class App extends React.Component<any, any> {
                 data={images}
                 keyExtractor={image => image.path}
                 renderItem={({ item }) => (
-                  // <Card>
-                  //   <Section>
-                  //     <Image
-                  //       style={{
-                  //         flex: 1,
-                  //         alignSelf: "stretch"
-                  //       }}
-                  //       resizeMode={"contain"}
-                  //       source={{ uri: item.uri }}
-                  //     />
-                  //   </Section>
-                  // </Card>
-                  <Image
-                    style={{
-                      flex: 1,
-                      alignSelf: "stretch",
-                      width: "100%",
-                      height: "100%",
-                      minHeight: 200
-                    }}
-                    resizeMode={"contain"}
-                    source={{ uri: item.uri }}
-                  />
+                  <Card>
+                    <Section>
+                      <Image
+                        style={{
+                          flex: 1,
+                          alignSelf: "stretch",
+                          width: "100%",
+                          height: "100%",
+                          minHeight: 200
+                        }}
+                        resizeMode={"contain"}
+                        source={{ uri: item.uri }}
+                      />
+                    </Section>
+                  </Card>
                 )}
               />
             )
