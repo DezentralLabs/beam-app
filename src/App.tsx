@@ -13,22 +13,20 @@ import flattenDeep from "lodash.flattendeep";
 import RNFileSystem from "react-native-fs";
 import base64js from "base64-js";
 import Button from "./components/Button";
-import Card from "./components/Card";
-import Section from "./components/Section";
-
-function isImage(filePath: string) {
-  return /\.(jpe?g|png|gif|bmp)$/i.test(filePath);
-}
-
-interface IImageFile {
-  data: ArrayBuffer;
-  uri: string;
-  path: string;
-}
+// import Card from "./components/Card";
+// import Section from "./components/Section";
+import {
+  isImage,
+  getFileName,
+  getMimeType,
+  getBase64ImgSrc
+} from "./helpers/utils";
+import { WINDOW_WIDTH } from "./helpers/constants";
+import { IFileJson } from "./helpers/types";
 
 interface IAppState {
   loading: boolean;
-  images: IImageFile[];
+  images: IFileJson[];
 }
 
 export default class App extends React.Component<any, any> {
@@ -39,25 +37,31 @@ export default class App extends React.Component<any, any> {
 
   scanFolder = async (
     dirPath: string
-  ): Promise<(IImageFile | any[] | null)[]> => {
+  ): Promise<(IFileJson | any[] | null)[]> => {
     const nodes = await RNFileSystem.readDir(dirPath);
     let files = await Promise.all(
       nodes.map(async node => {
         const path = node.path;
         if (node.isFile()) {
-          let file: IImageFile | null = null;
+          let fileJson: IFileJson | null = null;
           if (isImage(path)) {
-            const BASE64_PREFIX = "data:image/jpeg;base64,";
+            const name = getFileName(path);
+            const mime = getMimeType(name);
+            const stats = await RNFileSystem.stat(path);
             const base64 = await RNFileSystem.readFile(path, "base64");
-            const uri = `${BASE64_PREFIX}${base64}`;
-            const data = base64js.toByteArray(base64).buffer;
-            file = {
-              data: data,
-              uri: uri,
-              path: path
+            const uri = getBase64ImgSrc(base64, mime);
+            fileJson = {
+              name,
+              mime,
+              file: uri,
+              meta: {
+                added: new Date(stats.ctime).getTime(),
+                modified: new Date(stats.mtime).getTime(),
+                keywords: []
+              }
             };
           }
-          return file;
+          return fileJson;
         } else if (node.isDirectory()) {
           const files = await this.scanFolder(path);
           return files;
@@ -65,7 +69,9 @@ export default class App extends React.Component<any, any> {
         return null;
       })
     );
-    files = flattenDeep(files).filter(x => !!x);
+    files = flattenDeep(files)
+      .filter(x => !!x)
+      .reverse();
     return files;
   };
 
@@ -93,16 +99,20 @@ export default class App extends React.Component<any, any> {
     try {
       await this.setState({ loading: true });
       const file = await this.selectFile();
+      console.log("file", file);
       const sourcePath = file.uri.replace("file:///private", "");
+      console.log("sourcePath", sourcePath);
       const targetPath = `${sourcePath.replace(
         `/${file.fileName}`,
         ""
       )}/import-${Date.now()}`;
+      console.log("targetPath", targetPath);
       const resultPath = await unzip(sourcePath, targetPath);
+      console.log("resultPath", resultPath);
       const images = await this.scanFolder(resultPath);
       if (images && images.length) {
         console.log("images", images);
-        await this.setState({ loading: false, images });
+        await this.setState({ loading: false, images: images });
       } else {
         console.error("Failed to load images");
         await this.setState({ loading: false });
@@ -133,24 +143,23 @@ export default class App extends React.Component<any, any> {
               </Button>
             ) : (
               <FlatList
+                contentContainerStyle={{
+                  flexDirection: "row",
+                  flexWrap: "wrap"
+                }}
                 data={images}
-                keyExtractor={image => image.path}
+                keyExtractor={image => image.name}
                 renderItem={({ item }) => (
-                  <Card>
-                    <Section>
-                      <Image
-                        style={{
-                          flex: 1,
-                          alignSelf: "stretch",
-                          width: "100%",
-                          height: "100%",
-                          minHeight: 200
-                        }}
-                        resizeMode={"contain"}
-                        source={{ uri: item.uri }}
-                      />
-                    </Section>
-                  </Card>
+                  <Image
+                    style={{
+                      padding: 10,
+                      flex: 1,
+                      height: WINDOW_WIDTH / 3,
+                      width: WINDOW_WIDTH / 3
+                    }}
+                    resizeMode={"cover"}
+                    source={{ uri: item.file }}
+                  />
                 )}
               />
             )
