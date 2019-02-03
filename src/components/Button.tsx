@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TouchableHighlight, Text, StyleSheet } from "react-native";
+import { TouchableHighlight, Text, StyleSheet, ViewStyle } from "react-native";
 
 const styles = StyleSheet.create({
   button: {
@@ -27,13 +27,18 @@ interface IButtonProps {
   onPress: any;
   color: string;
   width: number | string;
+  style?: ViewStyle;
 }
 
 const Button = (props: IButtonProps) => {
   const { color, children, width } = props;
   return (
     <TouchableHighlight
-      style={[styles.button, { backgroundColor: color, width: width }]}
+      style={[
+        styles.button,
+        { backgroundColor: color, width: width },
+        props.style
+      ]}
       {...props}
     >
       <Text style={styles.label}>{children}</Text>

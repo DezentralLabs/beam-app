@@ -1,3 +1,8 @@
+import { DocumentPicker } from "react-native-document-picker";
+import flattenDeep from "lodash.flattendeep";
+import RNFileSystem from "react-native-fs";
+import { unzip } from "react-native-zip-archive";
+import { IFileJson } from "./types";
 import { mimeTypes } from "./constants";
 
 export function getFileName(filePath: string) {
@@ -34,4 +39,75 @@ export function getBase64ImgSrc(base64: string, mime: string) {
 
 export function isImage(filePath: string) {
   return /\.(jpe?g|png|gif|bmp)$/i.test(filePath);
+}
+
+export function selectFile(): Promise<{
+  fileName: string;
+  fileSize: number;
+  uri: string;
+}> {
+  return new Promise((resolve, reject) => {
+    DocumentPicker.show(
+      {
+        filetype: ["public.data"]
+      },
+      (error: Error, result: any) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(result);
+      }
+    );
+  });
+}
+
+export async function unzipFile(filePath: string) {
+  const fileName = getFileName(filePath);
+  const sourcePath = filePath.replace("file:///private", "");
+  const targetPath = `${sourcePath.replace(
+    `/${fileName}`,
+    ""
+  )}/import-${Date.now()}`;
+  const resultPath = await unzip(sourcePath, targetPath);
+  return resultPath;
+}
+
+export async function scanDirectory(
+  dirPath: string
+): Promise<(IFileJson | any[] | null)[]> {
+  const nodes = await RNFileSystem.readDir(dirPath);
+  let files = await Promise.all(
+    nodes.map(async node => {
+      const path = node.path;
+      if (node.isFile()) {
+        let fileJson: IFileJson | null = null;
+        if (isImage(path)) {
+          const name = getFileName(path);
+          const mime = getMimeType(name);
+          const stats = await RNFileSystem.stat(path);
+          const base64 = await RNFileSystem.readFile(path, "base64");
+          const uri = getBase64ImgSrc(base64, mime);
+          fileJson = {
+            name,
+            mime,
+            file: uri,
+            meta: {
+              added: new Date(stats.ctime).getTime(),
+              modified: new Date(stats.mtime).getTime(),
+              keywords: []
+            }
+          };
+        }
+        return fileJson;
+      } else if (node.isDirectory()) {
+        const files = await scanDirectory(path);
+        return files;
+      }
+      return null;
+    })
+  );
+  files = flattenDeep(files)
+    .filter(x => !!x)
+    .reverse();
+  return files;
 }

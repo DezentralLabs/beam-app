@@ -1,12 +1,13 @@
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, ViewStyle } from "react-native";
 
 interface ICardProps {
   children: React.ReactNode;
+  style?: ViewStyle;
 }
 
 const Card = (props: ICardProps) => (
-  <View style={styles.card} {...props}>
+  <View style={[styles.card, props.style]} {...props}>
     {props.children}
   </View>
 );

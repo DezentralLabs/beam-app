@@ -28,15 +28,3 @@ export function navigate(
     );
   }
 }
-
-// export function openRequestModal(params?: NavigationParams) {
-//   navigate(
-//     "Modal",
-//     {},
-//     {
-//       type: "Navigation/NAVIGATE",
-//       routeName: "Request",
-//       params
-//     }
-//   );
-// }

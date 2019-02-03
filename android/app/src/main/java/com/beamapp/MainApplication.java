@@ -3,6 +3,8 @@ package com.beamapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.bitgo.randombytes.RandomBytesPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.rnfs.RNFSPackage;
 import com.rnziparchive.RNZipArchivePackage;
 import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
@@ -26,6 +28,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RandomBytesPackage(),
+            new RNGestureHandlerPackage(),
             new RNFSPackage(),
             new RNZipArchivePackage(),
             new ReactNativeDocumentPicker()
