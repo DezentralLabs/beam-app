@@ -16,7 +16,6 @@ class InitialAppScreen extends React.Component<any, any> {
         <Text style={styles.description}>
           {`Be in control of your social media`}
         </Text>
-
         <View style={[styles.content]}>
           <Button width={200} onPress={this.props.accountCreateNew}>
             {`Create new account`}
