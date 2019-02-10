@@ -12,6 +12,11 @@ class RecoverAccountScreen extends React.Component<any, any> {
     headerTitle: "Recover Account"
   };
 
+  updateSeedPhrase = (input: string) =>
+    this.props.accountUpdateSeedPhrase(input);
+
+  onSubmit = () => this.props.accountRecovery();
+
   render() {
     return (
       <View style={styles.container}>
@@ -22,14 +27,14 @@ class RecoverAccountScreen extends React.Component<any, any> {
             autoCapitalize={"none"}
             width={300}
             value={this.props.recoverSeedPhrase}
-            onChange={this.props.accountUpdateSeedPhrase}
+            onChange={this.updateSeedPhrase}
           />
         </View>
         <View style={[styles.content]}>
           <Button
             loading={this.props.loading}
             width={200}
-            onPress={this.props.accountRecovery}
+            onPress={this.onSubmit}
           >
             {`Recover`}
           </Button>

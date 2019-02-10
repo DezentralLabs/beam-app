@@ -5,7 +5,7 @@ import Section from "./Section";
 
 class AccountHeader extends React.Component<any, any> {
   render = () => {
-    const { address } = this.props;
+    const { address, username } = this.props;
     return (
       <Card
         style={{
@@ -35,6 +35,10 @@ class AccountHeader extends React.Component<any, any> {
               }}
             >
               <Section style={{ width: "auto", height: "auto", flex: 10 }}>
+                <Text style={{ fontWeight: "600", paddingLeft: 10 }}>
+                  {`@${username}`}
+                </Text>
+
                 <Text
                   style={{ fontFamily: "Menlo-Regular", paddingLeft: 10 }}
                   adjustsFontSizeToFit
