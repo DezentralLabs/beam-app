@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { connect } from "react-redux";
 import { accountCreateNew, accountRecovery } from "../../redux/_account";
 import Button from "../../components/Button";
+import TextButton from "../../components/TextButton";
 
 class InitialAppScreen extends React.Component<any, any> {
   static navigationOptions = {
@@ -20,9 +21,13 @@ class InitialAppScreen extends React.Component<any, any> {
           <Button width={200} onPress={this.props.accountCreateNew}>
             {`Create new account`}
           </Button>
-          <Button width={200} onPress={this.props.accountRecovery}>
+          <TextButton
+            style={styles.buttonMargin}
+            width={300}
+            onPress={this.props.accountRecovery}
+          >
             {`I already have an account`}
-          </Button>
+          </TextButton>
         </View>
       </View>
     );
@@ -40,7 +45,13 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   description: {
-    fontSize: 18
+    textAlign: "center",
+    fontSize: 24,
+    marginTop: 20,
+    marginBottom: 20
+  },
+  buttonMargin: {
+    marginTop: 8
   }
 });
 

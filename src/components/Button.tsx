@@ -1,5 +1,11 @@
 import * as React from "react";
-import { TouchableHighlight, Text, StyleSheet, ViewStyle } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ViewStyle,
+  RegisteredStyle
+} from "react-native";
 
 const styles = StyleSheet.create({
   button: {
@@ -18,7 +24,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     letterSpacing: 0.4,
-    textAlign: "center"
+    textAlign: "center",
+    lineHeight: 22
   }
 });
 
@@ -27,13 +34,13 @@ interface IButtonProps {
   onPress: any;
   color: string;
   width: number | string;
-  style?: ViewStyle;
+  style?: RegisteredStyle<ViewStyle> | ViewStyle;
 }
 
 const Button = (props: IButtonProps) => {
   const { color, children, width } = props;
   return (
-    <TouchableHighlight
+    <TouchableOpacity
       style={[
         styles.button,
         { backgroundColor: color, width: width },
@@ -42,7 +49,7 @@ const Button = (props: IButtonProps) => {
       {...props}
     >
       <Text style={styles.label}>{children}</Text>
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 };
 
