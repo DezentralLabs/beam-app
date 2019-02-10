@@ -20,11 +20,11 @@ class AccountProfileScreen extends React.Component<any, any> {
   };
 
   render() {
-    const { loading, account, images } = this.props;
+    const { loading, account, username, images } = this.props;
     const displayImages = !loading && images && images.length;
     return (
       <View style={styles.container}>
-        <AccountHeader address={account.address} />
+        <AccountHeader address={account.address} username={username} />
 
         {!displayImages && (
           <Text style={styles.description}>
@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
 const reduxProps = (reduxState: any) => ({
   loading: reduxState.account.loading,
   account: reduxState.account.account,
+  username: reduxState.account.username,
   images: reduxState.account.images
 });
 

@@ -1,5 +1,6 @@
 import { createWallet } from "../helpers/wallet";
 import { selectFile, unzipFile, scanDirectory } from "../helpers/utils";
+import { navigate } from "./_navigation";
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -32,6 +33,7 @@ export const accountCreateNew = () => async (dispatch: any) => {
   try {
     const account = await createWallet();
     dispatch({ type: ACCOUNT_CREATE_SUCCESS, payload: account });
+    dispatch(navigate({ routeName: "AccountProfile" }));
   } catch (error) {
     dispatch({ type: ACCOUNT_CREATE_FAILURE });
   }
@@ -47,6 +49,7 @@ export const accountRecovery = () => (dispatch: any) => {
   dispatch({ type: ACCOUNT_IMPORT_REQUEST });
   try {
     dispatch({ type: ACCOUNT_IMPORT_SUCCESS });
+    dispatch(navigate({ routeName: "AccountProfile" }));
   } catch (error) {
     dispatch({ type: ACCOUNT_IMPORT_FAILURE });
   }

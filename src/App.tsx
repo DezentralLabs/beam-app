@@ -1,45 +1,13 @@
-import * as React from "react";
 import { connect } from "react-redux";
-import { createStackNavigator, createAppContainer } from "react-navigation";
+import { createReduxContainer } from "react-navigation-redux-helpers";
+import AppNavigator from "./screens";
 
-import { setTopLevelNavigator } from "./navigation";
-import OnboardingStack from "./screens/Onboarding";
-import AccountStack from "./screens/Account";
-import ModalStack from "./screens/Modal";
+const AppReduxContainer = createReduxContainer(AppNavigator, "root");
 
-const MainStack = createStackNavigator(
-  {
-    Onboarding: OnboardingStack,
-    Account: AccountStack
-  },
-  {
-    initialRouteName: "Onboarding",
-    headerMode: "none"
-  }
-);
+const mapStateToProps = (state: any) => ({
+  state: state.navigation
+});
 
-const AppNavigator = createStackNavigator(
-  {
-    Main: MainStack,
-    Modal: ModalStack
-  },
-  {
-    initialRouteName: "Main",
-    headerMode: "none",
-    mode: "modal"
-  }
-);
+const App = connect(mapStateToProps)(AppReduxContainer);
 
-const AppContainer = createAppContainer(AppNavigator);
-
-class App extends React.Component<any, any> {
-  componentDidMount() {}
-  render = () => (
-    <AppContainer ref={navigatorRef => setTopLevelNavigator(navigatorRef)} />
-  );
-}
-
-export default connect(
-  null,
-  null
-)(App);
+export default App;
