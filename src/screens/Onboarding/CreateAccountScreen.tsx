@@ -18,6 +18,7 @@ class CreateAccountScreen extends React.Component<any, any> {
         <Text style={styles.description}>{`Choose a new username`}</Text>
         <View style={[styles.content]}>
           <Input
+            placeholder={"Username"}
             autoCapitalize={"none"}
             width={300}
             value={this.props.username}
