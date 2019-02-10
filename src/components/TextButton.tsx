@@ -53,7 +53,7 @@ const TextButton = (props: ITextButtonProps) => {
 
 TextButton.defaultProps = {
   width: "100%",
-  color: "#1b1f2399"
+  color: "#a5a5a5"
 };
 
 export default TextButton;

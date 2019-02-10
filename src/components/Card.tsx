@@ -1,9 +1,9 @@
 import * as React from "react";
-import { StyleSheet, View, ViewStyle } from "react-native";
+import { StyleSheet, View, ViewStyle, RegisteredStyle } from "react-native";
 
 interface ICardProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: RegisteredStyle<ViewStyle> | ViewStyle;
 }
 
 const Card = (props: ICardProps) => (

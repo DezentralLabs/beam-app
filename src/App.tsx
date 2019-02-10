@@ -3,17 +3,17 @@ import { connect } from "react-redux";
 import { createStackNavigator, createAppContainer } from "react-navigation";
 
 import { setTopLevelNavigator } from "./navigation";
+import OnboardingStack from "./screens/Onboarding";
 import AccountStack from "./screens/Account";
-import InitialStack from "./screens/Initial";
 import ModalStack from "./screens/Modal";
 
 const MainStack = createStackNavigator(
   {
-    Account: AccountStack,
-    Initial: InitialStack
+    Onboarding: OnboardingStack,
+    Account: AccountStack
   },
   {
-    initialRouteName: "Initial",
+    initialRouteName: "Onboarding",
     headerMode: "none"
   }
 );

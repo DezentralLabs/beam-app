@@ -14,3 +14,10 @@ export interface IFileJson {
 export interface IMimeTypes {
   [ext: string]: string;
 }
+
+export interface IEncryptedData {
+  iv: string;
+  ephemPublicKey: string;
+  ciphertext: string;
+  mac: string;
+}

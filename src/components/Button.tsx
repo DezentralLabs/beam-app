@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  ActivityIndicator,
   TouchableOpacity,
   Text,
   StyleSheet,
@@ -32,13 +33,14 @@ const styles = StyleSheet.create({
 interface IButtonProps {
   children: React.ReactNode;
   onPress: any;
+  loading?: boolean;
   color: string;
   width: number | string;
   style?: RegisteredStyle<ViewStyle> | ViewStyle;
 }
 
 const Button = (props: IButtonProps) => {
-  const { color, children, width } = props;
+  const { loading, color, children, width } = props;
   return (
     <TouchableOpacity
       style={[
@@ -48,7 +50,11 @@ const Button = (props: IButtonProps) => {
       ]}
       {...props}
     >
-      <Text style={styles.label}>{children}</Text>
+      {!loading ? (
+        <Text style={styles.label}>{children}</Text>
+      ) : (
+        <ActivityIndicator size="small" color="white" />
+      )}
     </TouchableOpacity>
   );
 };

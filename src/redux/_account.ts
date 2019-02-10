@@ -1,9 +1,15 @@
-import { createEthAccount } from "../helpers/eth-crypto";
+import { createWallet } from "../helpers/wallet";
 import { selectFile, unzipFile, scanDirectory } from "../helpers/utils";
 
 // -- Constants ------------------------------------------------------------- //
 
-const ACCOUNT_CREATE_NEW = "account/ACCOUNT_CREATE_NEW";
+const ACCOUNT_UPDATE_USERNAME = "account/ACCOUNT_UPDATE_USERNAME";
+
+const ACCOUNT_CREATE_REQUEST = "account/ACCOUNT_CREATE_REQUEST";
+const ACCOUNT_CREATE_SUCCESS = "account/ACCOUNT_CREATE_SUCCESS";
+const ACCOUNT_CREATE_FAILURE = "account/ACCOUNT_CREATE_FAILURE";
+
+const ACCOUNT_UPDATE_SEEDPHRASE = "account/ACCOUNT_UPDATE_SEEDPHRASE";
 
 const ACCOUNT_RECOVERY_REQUEST = "account/ACCOUNT_RECOVERY_REQUEST";
 const ACCOUNT_RECOVERY_SUCCESS = "account/ACCOUNT_RECOVERY_SUCCESS";
@@ -15,9 +21,26 @@ const ACCOUNT_IMPORT_FAILURE = "account/ACCOUNT_IMPORT_FAILURE";
 
 // -- Actions --------------------------------------------------------------- //
 
-export const accountCreateNew = () => (dispatch: any) => {
-  const account = createEthAccount();
-  dispatch({ type: ACCOUNT_CREATE_NEW, payload: account });
+export const accountUpdateUsername = (username: string) => async (
+  dispatch: any
+) => {
+  dispatch({ type: ACCOUNT_UPDATE_USERNAME, payload: username });
+};
+
+export const accountCreateNew = () => async (dispatch: any) => {
+  dispatch({ type: ACCOUNT_CREATE_REQUEST });
+  try {
+    const account = await createWallet();
+    dispatch({ type: ACCOUNT_CREATE_SUCCESS, payload: account });
+  } catch (error) {
+    dispatch({ type: ACCOUNT_CREATE_FAILURE });
+  }
+};
+
+export const accountUpdateSeedPhrase = (seedPhrase: string) => async (
+  dispatch: any
+) => {
+  dispatch({ type: ACCOUNT_UPDATE_SEEDPHRASE, payload: seedPhrase });
 };
 
 export const accountRecovery = () => (dispatch: any) => {
@@ -51,40 +74,48 @@ export const accountImport = () => async (dispatch: any) => {
 // -- Reducer --------------------------------------------------------------- //
 const IMPORTIAL_STATE = {
   loading: false,
+  recoverSeedPhrase: "",
+  username: "",
   images: [],
   account: {}
 };
 
 export default (state = IMPORTIAL_STATE, action: any) => {
   switch (action.type) {
-    case ACCOUNT_CREATE_NEW:
+    case ACCOUNT_UPDATE_USERNAME:
       return {
         ...state,
-        account: action.payload
+        username: action.payload
       };
-    case ACCOUNT_IMPORT_REQUEST:
+
+    case ACCOUNT_CREATE_REQUEST:
       return {
         ...state,
         loading: true
       };
-
-    case ACCOUNT_IMPORT_SUCCESS:
+    case ACCOUNT_CREATE_SUCCESS:
       return {
         ...state,
         loading: false,
         images: action.payload
       };
-    case ACCOUNT_IMPORT_FAILURE:
+    case ACCOUNT_CREATE_FAILURE:
       return {
         ...state,
         loading: false
       };
+
+    case ACCOUNT_UPDATE_SEEDPHRASE:
+      return {
+        ...state,
+        recoverSeedPhrase: action.payload
+      };
+
     case ACCOUNT_RECOVERY_REQUEST:
       return {
         ...state,
         loading: true
       };
-
     case ACCOUNT_RECOVERY_SUCCESS:
       return {
         ...state,
@@ -97,6 +128,22 @@ export default (state = IMPORTIAL_STATE, action: any) => {
         loading: false
       };
 
+    case ACCOUNT_IMPORT_REQUEST:
+      return {
+        ...state,
+        loading: true
+      };
+    case ACCOUNT_IMPORT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        images: action.payload
+      };
+    case ACCOUNT_IMPORT_FAILURE:
+      return {
+        ...state,
+        loading: false
+      };
     default:
       return state;
   }

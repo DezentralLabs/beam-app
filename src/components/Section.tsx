@@ -1,9 +1,9 @@
 import * as React from "react";
-import { StyleSheet, View, ViewStyle } from "react-native";
+import { StyleSheet, View, ViewStyle, RegisteredStyle } from "react-native";
 
 interface ISectionProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: RegisteredStyle<ViewStyle> | ViewStyle;
 }
 
 const Section = (props: ISectionProps) => (
