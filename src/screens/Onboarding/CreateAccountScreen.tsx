@@ -12,6 +12,10 @@ class CreateAccountScreen extends React.Component<any, any> {
     headerTitle: "Create Account"
   };
 
+  updateUsername = (input: string) => this.props.accountUpdateUsername(input);
+
+  onSubmit = () => this.props.accountCreateNew();
+
   render() {
     return (
       <View style={styles.container}>
@@ -22,14 +26,14 @@ class CreateAccountScreen extends React.Component<any, any> {
             autoCapitalize={"none"}
             width={300}
             value={this.props.username}
-            onChange={this.props.accountUpdateUsername}
+            onChange={this.updateUsername}
           />
         </View>
         <View style={[styles.content]}>
           <Button
             loading={this.props.loading}
             width={200}
-            onPress={this.props.accountCreateNew}
+            onPress={this.onSubmit}
           >
             {`Create`}
           </Button>

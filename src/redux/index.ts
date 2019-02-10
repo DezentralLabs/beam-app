@@ -1,7 +1,7 @@
-import { createStore, applyMiddleware, combineReducers } from "redux";
+import { createStore, applyMiddleware, combineReducers, compose } from "redux";
 import ReduxThunk from "redux-thunk";
 import { createReactNavigationReduxMiddleware } from "react-navigation-redux-helpers";
-import logger from "redux-logger";
+import { createLogger } from "redux-logger";
 import account from "./_account";
 import navigation from "./_navigation";
 
@@ -10,13 +10,17 @@ export const reducers = combineReducers({
   navigation
 });
 
-export const middleware = applyMiddleware(
-  createReactNavigationReduxMiddleware((state: any) => state.navigation),
-  ReduxThunk,
-  logger
+const loggerMiddleware = createLogger();
+
+const reduxMiddleware = createReactNavigationReduxMiddleware(
+  (state: any) => state.navigation
 );
 
-export const store = createStore(reducers, middleware);
+const configureStore = compose(
+  applyMiddleware(ReduxThunk, loggerMiddleware, reduxMiddleware)
+)(createStore);
+
+export const store = configureStore(reducers);
 
 export const { dispatch } = store;
 
