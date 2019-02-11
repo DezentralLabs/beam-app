@@ -2,6 +2,7 @@ import * as React from "react";
 import {
   FlatList,
   StyleSheet,
+  Text,
   View,
   Image,
   ActivityIndicator
@@ -19,7 +20,14 @@ class AccountProfileScreen extends React.Component<any, any> {
   };
 
   render() {
-    const { initiating, loading, account, username, images } = this.props;
+    const {
+      initiating,
+      uploading,
+      loading,
+      account,
+      username,
+      images
+    } = this.props;
     const displayImages = !loading && images && images.length;
     return !initiating ? (
       <View style={styles.container}>
@@ -30,7 +38,7 @@ class AccountProfileScreen extends React.Component<any, any> {
           {!loading ? (
             !displayImages ? (
               <Button width={200} onPress={this.props.accountImport}>
-                Upload
+                Import
               </Button>
             ) : (
               <FlatList
@@ -58,6 +66,23 @@ class AccountProfileScreen extends React.Component<any, any> {
             <ActivityIndicator size="small" color="#a5a5a5" />
           )}
         </View>
+        {uploading && (
+          <View
+            style={{
+              width: WINDOW_WIDTH,
+              height: 80,
+              position: "absolute",
+              bottom: 0,
+              backgroundColor: "white",
+              paddingTop: 10,
+              justifyContent: "center"
+            }}
+          >
+            <Text style={{ fontWeight: "600", textAlign: "center" }}>
+              {"Uploading..."}
+            </Text>
+          </View>
+        )}
       </View>
     ) : (
       <View style={styles.content}>
@@ -87,6 +112,7 @@ const styles = StyleSheet.create({
 
 const reduxProps = (reduxState: any) => ({
   initiating: reduxState.account.initiating,
+  uploading: reduxState.account.uploading,
   loading: reduxState.account.loading,
   account: reduxState.account.account,
   username: reduxState.account.username,

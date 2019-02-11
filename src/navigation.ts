@@ -31,3 +31,9 @@ export function navigate(
     );
   }
 }
+
+export function goBack() {
+  if (_navigator) {
+    _navigator.dispatch(NavigationActions.back());
+  }
+}

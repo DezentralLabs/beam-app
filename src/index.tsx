@@ -6,7 +6,8 @@ import store from "./redux/store";
 
 YellowBox.ignoreWarnings([
   "Warning: isMounted(...) is deprecated",
-  "Module RCTImageLoader"
+  "Module RCTImageLoader",
+  "Warning: `flexWrap: `wrap`` is not supported with the `VirtualizedList` components.Consider using `numColumns` with `FlatList` instead."
 ]);
 
 export default () => (

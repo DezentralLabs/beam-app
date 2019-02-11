@@ -1,9 +1,11 @@
 import { createWallet } from "../helpers/wallet";
 import { selectFile, unzipFile, scanDirectory } from "../helpers/utils";
-import { navigate } from "../navigation";
+import { navigate, goBack } from "../navigation";
 import { saveProfile } from "../helpers/asyncStorage";
 import { loadWallet } from "../helpers/wallet";
 import { getProfile } from "../helpers/asyncStorage";
+import { IFileJson } from "../helpers/types";
+import { pinFile } from "../helpers/api";
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -26,6 +28,14 @@ const ACCOUNT_RECOVERY_FAILURE = "account/ACCOUNT_RECOVERY_FAILURE";
 const ACCOUNT_IMPORT_REQUEST = "account/ACCOUNT_IMPORT_REQUEST";
 const ACCOUNT_IMPORT_SUCCESS = "account/ACCOUNT_IMPORT_SUCCESS";
 const ACCOUNT_IMPORT_FAILURE = "account/ACCOUNT_IMPORT_FAILURE";
+
+const ACCOUNT_UPDATE_SELECTED = "account/ACCOUNT_UPDATE_SELECTED";
+
+const ACCOUNT_UPLOAD_REQUEST = "account/ACCOUNT_UPLOAD_REQUEST";
+const ACCOUNT_UPLOAD_SUCCESS = "account/ACCOUNT_UPLOAD_SUCCESS";
+const ACCOUNT_UPLOAD_FAILURE = "account/ACCOUNT_UPLOAD_FAILURE";
+
+const ACCOUNT_ADD_IMAGE = "account/ACCOUNT_ADD_IMAGE";
 
 // -- Actions --------------------------------------------------------------- //
 
@@ -107,12 +117,13 @@ export const accountImport = () => async (dispatch: any) => {
   try {
     const file = await selectFile();
     const resultPath = await unzipFile(file.uri);
-    const images = await scanDirectory(resultPath);
-    if (images && images.length) {
-      console.log("images", images);
-      dispatch({ type: ACCOUNT_IMPORT_SUCCESS, payload: images });
+    const imported = await scanDirectory(resultPath);
+    if (imported && imported.length) {
+      console.log("imported", imported);
+      dispatch({ type: ACCOUNT_IMPORT_SUCCESS, payload: imported });
+      navigate("Import");
     } else {
-      console.error("Failed to load images");
+      console.error("Failed to import images");
       dispatch({ type: ACCOUNT_IMPORT_FAILURE });
     }
   } catch (error) {
@@ -121,18 +132,71 @@ export const accountImport = () => async (dispatch: any) => {
   }
 };
 
+export const accountUpdateSelected = (file: IFileJson) => async (
+  dispatch: any,
+  getState: any
+) => {
+  let selected: IFileJson[] = [];
+  let isNewFile = true;
+  const prevSelected = getState().account.selected;
+
+  prevSelected.forEach((prevFile: IFileJson) => {
+    if (prevFile.name !== file.name) {
+      selected.push(prevFile);
+    } else {
+      isNewFile = false;
+    }
+  });
+
+  if (isNewFile) {
+    selected.push(file);
+  }
+
+  dispatch({ type: ACCOUNT_UPDATE_SELECTED, payload: selected });
+};
+
+export const accountUpload = () => async (dispatch: any, getState: any) => {
+  const { selected } = getState().account;
+  dispatch({ type: ACCOUNT_UPLOAD_REQUEST });
+  try {
+    goBack();
+    await Promise.all(
+      selected.map(async (fileJson: IFileJson) => {
+        await pinFile(fileJson);
+        dispatch(accountAddImage(fileJson));
+      })
+    );
+    dispatch({ type: ACCOUNT_UPLOAD_SUCCESS });
+  } catch (error) {
+    console.error(error);
+    dispatch({ type: ACCOUNT_UPLOAD_FAILURE });
+  }
+};
+
+export const accountAddImage = (image: IFileJson) => async (
+  dispatch: any,
+  getState: any
+) => {
+  const prevImages = getState().account.images;
+  const images = [...prevImages, image];
+  dispatch({ type: ACCOUNT_ADD_IMAGE, payload: images });
+};
+
 // -- Reducer --------------------------------------------------------------- //
-const IMPORTIAL_STATE = {
+const INITIAL_STATE = {
+  uploading: false,
   initiating: false,
   loading: false,
   recoverSeedPhrase: "",
   username: "",
   address: "",
+  selected: [],
+  imported: [],
   images: [],
   account: {}
 };
 
-export default (state = IMPORTIAL_STATE, action: any) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case ACCOUNT_INIT_REQUEST:
       return {
@@ -154,6 +218,8 @@ export default (state = IMPORTIAL_STATE, action: any) => {
       };
 
     case ACCOUNT_UPDATE_USERNAME:
+      console.log("action.type", action.type);
+      console.log("action.payload", action.payload);
       return {
         ...state,
         username: action.payload
@@ -178,6 +244,8 @@ export default (state = IMPORTIAL_STATE, action: any) => {
       };
 
     case ACCOUNT_UPDATE_SEEDPHRASE:
+      console.log("action.type", action.type);
+      console.log("action.payload", action.payload);
       return {
         ...state,
         recoverSeedPhrase: action.payload
@@ -200,6 +268,14 @@ export default (state = IMPORTIAL_STATE, action: any) => {
         loading: false
       };
 
+    case ACCOUNT_UPDATE_SEEDPHRASE:
+      console.log("action.type", action.type);
+      console.log("action.payload", action.payload);
+      return {
+        ...state,
+        recoverSeedPhrase: action.payload
+      };
+
     case ACCOUNT_IMPORT_REQUEST:
       return {
         ...state,
@@ -209,12 +285,42 @@ export default (state = IMPORTIAL_STATE, action: any) => {
       return {
         ...state,
         loading: false,
-        images: action.payload
+        imported: action.payload
       };
     case ACCOUNT_IMPORT_FAILURE:
       return {
         ...state,
         loading: false
+      };
+
+    case ACCOUNT_UPDATE_SELECTED:
+      console.log("action.type", action.type);
+      console.log("action.payload", action.payload);
+      return {
+        ...state,
+        selected: action.payload
+      };
+
+    case ACCOUNT_UPLOAD_REQUEST:
+      return {
+        ...state,
+        uploading: true
+      };
+    case ACCOUNT_UPLOAD_SUCCESS:
+      return {
+        ...state,
+        uploading: false
+      };
+    case ACCOUNT_UPLOAD_FAILURE:
+      return {
+        ...state,
+        uploading: false
+      };
+
+    case ACCOUNT_ADD_IMAGE:
+      return {
+        ...state,
+        images: action.payload
       };
     default:
       return state;
