@@ -6,7 +6,8 @@ import { setTopLevelNavigator } from "./navigation";
 import OnboardingStack from "./screens/Onboarding";
 import AccountStack from "./screens/Account";
 import ModalStack from "./screens/Modal";
-import { keychainDelete } from "./helpers/keychain";
+import { deleteMnemonic } from "./helpers/wallet";
+import { deleteProfile } from "./helpers/asyncStorage";
 
 const MainStack = createStackNavigator(
   {
@@ -14,8 +15,9 @@ const MainStack = createStackNavigator(
     Account: AccountStack
   },
   {
-    initialRouteName: "Onboarding",
-    headerMode: "none"
+    initialRouteName: "Account",
+    headerMode: "none",
+    mode: "modal"
   }
 );
 
@@ -35,8 +37,13 @@ const AppContainer = createAppContainer(AppNavigator);
 
 class App extends React.Component<any, any> {
   componentDidMount() {
+    // this.resetApp();
     this.props.accountInit();
   }
+  resetApp = async () => {
+    await deleteMnemonic();
+    await deleteProfile();
+  };
   render = () => (
     <AppContainer ref={navigatorRef => setTopLevelNavigator(navigatorRef)} />
   );

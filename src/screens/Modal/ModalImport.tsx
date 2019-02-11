@@ -65,7 +65,7 @@ class ModalImport extends React.Component<any, any> {
               />
             )
           ) : (
-            <ActivityIndicator size="small" color="grey" />
+            <ActivityIndicator size="small" color="#a5a5a5" />
           )}
         </View>
       </View>

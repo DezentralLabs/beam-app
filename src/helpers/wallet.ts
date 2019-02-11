@@ -1,6 +1,6 @@
 import EthCrypto from "eth-crypto";
 import * as ethers from "ethers";
-import { keychainSave, keychainLoad } from "./keychain";
+import { keychainSave, keychainLoad, keychainDelete } from "./keychain";
 import { IEncryptedData } from "./types";
 
 const standardPath = "m/44'/60'/0'/0";
@@ -134,5 +134,10 @@ export async function saveMnemonic(mnemonic: string) {
 
 export async function loadMnemonic() {
   const mnemonic = await keychainLoad(mnemonicKey);
+  return mnemonic;
+}
+
+export async function deleteMnemonic() {
+  const mnemonic = await keychainDelete(mnemonicKey);
   return mnemonic;
 }

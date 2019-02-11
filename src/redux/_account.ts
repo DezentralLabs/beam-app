@@ -46,7 +46,6 @@ export const accountInit = () => async (dispatch: any) => {
           username
         }
       });
-      navigate("AccountProfile");
     } else {
       dispatch({
         type: ACCOUNT_INIT_SUCCESS,
@@ -55,6 +54,7 @@ export const accountInit = () => async (dispatch: any) => {
           username: ""
         }
       });
+      navigate("Onboarding");
     }
   } catch (error) {
     dispatch({ type: ACCOUNT_INIT_FAILURE });
@@ -123,6 +123,7 @@ export const accountImport = () => async (dispatch: any) => {
 
 // -- Reducer --------------------------------------------------------------- //
 const IMPORTIAL_STATE = {
+  initiating: false,
   loading: false,
   recoverSeedPhrase: "",
   username: "",
@@ -136,12 +137,12 @@ export default (state = IMPORTIAL_STATE, action: any) => {
     case ACCOUNT_INIT_REQUEST:
       return {
         ...state,
-        loading: true
+        initiating: true
       };
     case ACCOUNT_INIT_SUCCESS:
       return {
         ...state,
-        loading: false,
+        initiating: false,
         username: action.payload.username,
         account: action.payload.account,
         address: action.payload.account.address
@@ -149,7 +150,7 @@ export default (state = IMPORTIAL_STATE, action: any) => {
     case ACCOUNT_INIT_FAILURE:
       return {
         ...state,
-        loading: false
+        initiating: false
       };
 
     case ACCOUNT_UPDATE_USERNAME:

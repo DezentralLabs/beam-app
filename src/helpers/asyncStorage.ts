@@ -58,6 +58,6 @@ export async function updateProfile(updatedProfile: any) {
   await saveProfile(newProfile);
 }
 
-export async function deleteProfile(key: string) {
+export async function deleteProfile() {
   await asyncStorageDelete(profileKey);
 }

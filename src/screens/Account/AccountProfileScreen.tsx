@@ -19,9 +19,9 @@ class AccountProfileScreen extends React.Component<any, any> {
   };
 
   render() {
-    const { loading, account, username, images } = this.props;
+    const { initiating, loading, account, username, images } = this.props;
     const displayImages = !loading && images && images.length;
-    return (
+    return !initiating ? (
       <View style={styles.container}>
         <AccountHeader address={account.address} username={username} />
         <View
@@ -55,9 +55,13 @@ class AccountProfileScreen extends React.Component<any, any> {
               />
             )
           ) : (
-            <ActivityIndicator size="small" color="grey" />
+            <ActivityIndicator size="small" color="#a5a5a5" />
           )}
         </View>
+      </View>
+    ) : (
+      <View style={styles.content}>
+        <ActivityIndicator size="large" color="#a5a5a5" />
       </View>
     );
   }
@@ -82,6 +86,7 @@ const styles = StyleSheet.create({
 });
 
 const reduxProps = (reduxState: any) => ({
+  initiating: reduxState.account.initiating,
   loading: reduxState.account.loading,
   account: reduxState.account.account,
   username: reduxState.account.username,
