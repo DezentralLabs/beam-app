@@ -1,7 +1,15 @@
 import { createWallet } from "../helpers/wallet";
 import { selectFile, unzipFile, scanDirectory } from "../helpers/utils";
+import { navigate } from "../navigation";
+import { saveProfile } from "../helpers/asyncStorage";
+import { loadWallet } from "../helpers/wallet";
+import { getProfile } from "../helpers/asyncStorage";
 
 // -- Constants ------------------------------------------------------------- //
+
+const ACCOUNT_INIT_REQUEST = "account/ACCOUNT_INIT_REQUEST";
+const ACCOUNT_INIT_SUCCESS = "account/ACCOUNT_INIT_SUCCESS";
+const ACCOUNT_INIT_FAILURE = "account/ACCOUNT_INIT_FAILURE";
 
 const ACCOUNT_UPDATE_USERNAME = "account/ACCOUNT_UPDATE_USERNAME";
 
@@ -21,17 +29,58 @@ const ACCOUNT_IMPORT_FAILURE = "account/ACCOUNT_IMPORT_FAILURE";
 
 // -- Actions --------------------------------------------------------------- //
 
+export const accountInit = () => async (dispatch: any) => {
+  dispatch({ type: ACCOUNT_INIT_REQUEST });
+  console.log(ACCOUNT_INIT_REQUEST);
+  try {
+    const account = await loadWallet();
+    if (account) {
+      const profile = await getProfile();
+      const username = profile.username;
+      console.log("[accountInit] account.address", account.address);
+      console.log("[accountInit] profile.username", profile.username);
+      dispatch({
+        type: ACCOUNT_INIT_SUCCESS,
+        payload: {
+          account,
+          username
+        }
+      });
+      navigate("AccountProfile");
+    } else {
+      dispatch({
+        type: ACCOUNT_INIT_SUCCESS,
+        payload: {
+          account: { address: "" },
+          username: ""
+        }
+      });
+    }
+  } catch (error) {
+    dispatch({ type: ACCOUNT_INIT_FAILURE });
+  }
+};
+
 export const accountUpdateUsername = (username: string) => async (
   dispatch: any
 ) => {
   dispatch({ type: ACCOUNT_UPDATE_USERNAME, payload: username });
 };
 
-export const accountCreateNew = () => async (dispatch: any) => {
+export const accountCreateNew = () => async (dispatch: any, getState: any) => {
   dispatch({ type: ACCOUNT_CREATE_REQUEST });
   try {
+    const { username } = getState().account;
     const account = await createWallet();
+    saveProfile({
+      address: account.address,
+      username: username
+    });
+    console.log("[accountCreateNew] account.address", account.address);
+    console.log("[accountCreateNew] username", username);
+
     dispatch({ type: ACCOUNT_CREATE_SUCCESS, payload: account });
+    navigate("AccountProfile");
   } catch (error) {
     dispatch({ type: ACCOUNT_CREATE_FAILURE });
   }
@@ -47,6 +96,7 @@ export const accountRecovery = () => (dispatch: any) => {
   dispatch({ type: ACCOUNT_IMPORT_REQUEST });
   try {
     dispatch({ type: ACCOUNT_IMPORT_SUCCESS });
+    navigate("AccountProfile");
   } catch (error) {
     dispatch({ type: ACCOUNT_IMPORT_FAILURE });
   }
@@ -76,12 +126,32 @@ const IMPORTIAL_STATE = {
   loading: false,
   recoverSeedPhrase: "",
   username: "",
+  address: "",
   images: [],
   account: {}
 };
 
 export default (state = IMPORTIAL_STATE, action: any) => {
   switch (action.type) {
+    case ACCOUNT_INIT_REQUEST:
+      return {
+        ...state,
+        loading: true
+      };
+    case ACCOUNT_INIT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        username: action.payload.username,
+        account: action.payload.account,
+        address: action.payload.account.address
+      };
+    case ACCOUNT_INIT_FAILURE:
+      return {
+        ...state,
+        loading: false
+      };
+
     case ACCOUNT_UPDATE_USERNAME:
       return {
         ...state,
@@ -97,7 +167,8 @@ export default (state = IMPORTIAL_STATE, action: any) => {
       return {
         ...state,
         loading: false,
-        images: action.payload
+        account: action.payload,
+        address: action.payload.address
       };
     case ACCOUNT_CREATE_FAILURE:
       return {

@@ -2,7 +2,6 @@ import * as React from "react";
 import {
   FlatList,
   StyleSheet,
-  Text,
   View,
   Image,
   ActivityIndicator
@@ -25,12 +24,6 @@ class AccountProfileScreen extends React.Component<any, any> {
     return (
       <View style={styles.container}>
         <AccountHeader address={account.address} username={username} />
-
-        {!displayImages && (
-          <Text style={styles.description}>
-            {loading ? "Uploading..." : "Upload your Instagram import"}
-          </Text>
-        )}
         <View
           style={[styles.content, displayImages ? styles.displayImages : {}]}
         >
@@ -72,13 +65,12 @@ class AccountProfileScreen extends React.Component<any, any> {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
+    flex: 1
   },
   content: {
-    marginTop: 20
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
   },
   displayImages: {
     flex: 1,

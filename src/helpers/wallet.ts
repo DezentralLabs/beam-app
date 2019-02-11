@@ -39,17 +39,6 @@ function generateAddresses(n: number = 10) {
   return [];
 }
 
-export async function initWallet() {
-  let account = await loadWallet();
-  if (!account) {
-    account = await createWallet();
-  }
-  activeIndex = 0;
-  activeAccount = account;
-
-  return account.address;
-}
-
 export async function createWallet() {
   const mnemonic = generateMnemonic();
   const path = generatePath();
@@ -64,6 +53,7 @@ export async function loadWallet() {
   if (mnemonic) {
     const path = generatePath();
     const account = ethers.Wallet.fromMnemonic(mnemonic, path);
+    console.log("loadWallet account", account);
     return account;
   }
   return null;
@@ -136,7 +126,7 @@ export async function decrypt(
 
 // -- Keychain -------------------------------------------------------------- //
 
-const mnemonicKey = "mnemonic";
+const mnemonicKey = "BEAM_ACCOUNT_MNEMONIC";
 
 export async function saveMnemonic(mnemonic: string) {
   await keychainSave(mnemonicKey, mnemonic);
