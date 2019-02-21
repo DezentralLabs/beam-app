@@ -7,7 +7,7 @@ import OnboardingStack from "./screens/Onboarding";
 import AccountStack from "./screens/Account";
 import ModalStack from "./screens/Modal";
 import { deleteMnemonic } from "./helpers/wallet";
-import { deleteProfile } from "./helpers/asyncStorage";
+import { deleteProfile } from "./helpers/profile";
 
 const MainStack = createStackNavigator(
   {
@@ -37,19 +37,26 @@ const AppContainer = createAppContainer(AppNavigator);
 
 class App extends React.Component<any, any> {
   componentDidMount() {
-    // this.resetApp();
-    this.props.accountInit();
+    this.initApp();
   }
+  initApp = async () => {
+    // await this.resetApp();
+    this.props.accountInit();
+  };
   resetApp = async () => {
     await deleteMnemonic();
-    await deleteProfile();
+    await deleteProfile(this.props.account.address);
   };
   render = () => (
     <AppContainer ref={navigatorRef => setTopLevelNavigator(navigatorRef)} />
   );
 }
 
+const reduxProps = (reduxState: any) => ({
+  account: reduxState.account.account
+});
+
 export default connect(
-  null,
+  reduxProps,
   { accountInit }
 )(App);

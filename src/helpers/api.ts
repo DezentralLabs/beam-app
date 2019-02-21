@@ -15,13 +15,19 @@ const api = axios.create({
   }
 });
 
-export const pinFile = (fileJson: IFileJson) =>
-  api.post("pinning/pinJSONToIPFS", fileJson);
+export const pinFile = async (fileJson: IFileJson) => {
+  console.log("[pinFile] fileJson", fileJson);
+  const response = await api.post("pinning/pinJSONToIPFS", fileJson);
+  return response;
+};
 
-// export const fetchFile = (fileHash: string) =>
-//   api.get(`/ipfs/${fileHash}`, {
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json"
-//     }
-//   });
+export const fetchFile = async (fileHash: string) => {
+  console.log("[fetchFile] fileHash", fileHash);
+  const response = await axios.get(`https://ipfs.io/ipfs/${fileHash}`, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    }
+  });
+  return response;
+};

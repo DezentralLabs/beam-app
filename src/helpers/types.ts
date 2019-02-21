@@ -21,3 +21,8 @@ export interface IEncryptedData {
   ciphertext: string;
   mac: string;
 }
+
+export interface IProfile {
+  username: string;
+  pinnedFiles: string[];
+}

@@ -38,6 +38,8 @@ class ModalImport extends React.Component<any, any> {
             ) : (
               <FlatList
                 contentContainerStyle={{
+                  width: WINDOW_WIDTH,
+                  justifyContent: "flex-start",
                   flexDirection: "row",
                   flexWrap: "wrap"
                 }}

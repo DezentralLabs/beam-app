@@ -39,25 +39,3 @@ export async function asyncStorageDelete(key: string) {
     );
   }
 }
-
-// -- Profile --------------------------------------------------------------- //
-
-const profileKey = "BEAM_PROFILE_DETAILS";
-
-export async function saveProfile(profile: any) {
-  await asyncStorageSave(profileKey, profile);
-}
-
-export async function getProfile() {
-  return await asyncStorageLoad(profileKey);
-}
-
-export async function updateProfile(updatedProfile: any) {
-  const profile = getProfile();
-  const newProfile = { ...profile, ...updatedProfile };
-  await saveProfile(newProfile);
-}
-
-export async function deleteProfile() {
-  await asyncStorageDelete(profileKey);
-}

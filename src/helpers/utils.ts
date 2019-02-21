@@ -5,6 +5,13 @@ import { unzip } from "react-native-zip-archive";
 import { IFileJson } from "./types";
 import { mimeTypes } from "./constants";
 
+export function formatFilePath(
+  fileName: string,
+  fileExtension: string = "json"
+) {
+  return `${RNFileSystem.DocumentDirectoryPath}/${fileName}.${fileExtension}`;
+}
+
 export function getFileName(filePath: string) {
   const fileName = filePath.replace(/^.*[\\\/]/, "");
   if (fileName) {
@@ -72,6 +79,24 @@ export async function unzipFile(filePath: string) {
   return resultPath;
 }
 
+export async function getStats(filePath: string) {
+  const result = await RNFileSystem.stat(filePath);
+  console.log("[getStats] result", result);
+  return result;
+}
+
+export async function readFile(filePath: string, encoding: string = "utf8") {
+  const result = await RNFileSystem.readFile(filePath, encoding);
+  console.log("[readFile] result", result);
+  return result;
+}
+
+export async function writeFile(filePath: string, data: any, encoding: string) {
+  const result = await RNFileSystem.writeFile(filePath, data, encoding);
+  console.log("[writeFile] result", result);
+  return result;
+}
+
 export async function scanDirectory(
   dirPath: string
 ): Promise<(IFileJson | any[] | null)[]> {
@@ -84,8 +109,8 @@ export async function scanDirectory(
         if (isImage(path)) {
           const name = getFileName(path);
           const mime = getMimeType(name);
-          const stats = await RNFileSystem.stat(path);
-          const base64 = await RNFileSystem.readFile(path, "base64");
+          const stats = await getStats(path);
+          const base64 = await readFile(path, "base64");
           const uri = getBase64ImgSrc(base64, mime);
           fileJson = {
             name,

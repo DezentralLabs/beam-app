@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "./node_modules/.bin/rn-nodeify --hack --install",
-    "clean:cache": "rm -rf $TMPDIR/react-* && watchman watch-del-all && npm cache clean --force && npm cache verify",
+    "clean:cache": "rm -rf $TMPDIR/react-* && npm cache clean --force && npm cache verify",
     "start": "npm run clean:cache && react-native start --reset-cache",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
