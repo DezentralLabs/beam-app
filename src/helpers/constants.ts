@@ -17,6 +17,9 @@ export const DEVICE_LANGUAGE =
     ? NativeModules.SettingsManager.settings.AppleLocale
     : NativeModules.I18nManager.localeIdentifier;
 
+export const STATUSBAR_HEIGHT =
+  Platform.OS === "ios" ? 20 : StatusBar.currentHeight;
+
 export const mimeTypes: IMimeTypes = {
   gif: "image/gif",
   png: "image/png",

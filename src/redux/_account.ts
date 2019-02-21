@@ -1,12 +1,5 @@
 import { createWallet } from "../helpers/wallet";
-import {
-  selectFile,
-  unzipFile,
-  writeFile,
-  readFile,
-  scanDirectory,
-  formatFilePath
-} from "../helpers/utils";
+import { selectFile, unzipFile, scanDirectory } from "../helpers/utils";
 import {
   getProfile,
   saveProfile,
@@ -15,7 +8,6 @@ import {
 } from "../helpers/profile";
 import { loadWallet } from "../helpers/wallet";
 import { IFileJson } from "../helpers/types";
-import { apiPinFile, apiFetchFile } from "../helpers/api";
 import { navigate, goBack } from "../navigation";
 
 // -- Constants ------------------------------------------------------------- //
@@ -51,6 +43,9 @@ const ACCOUNT_LOAD_PINNED_SUCCESS = "account/ACCOUNT_LOAD_PINNED_SUCCESS";
 const ACCOUNT_LOAD_PINNED_FAILURE = "account/ACCOUNT_LOAD_PINNED_FAILURE";
 
 const ACCOUNT_ADD_IMAGE = "account/ACCOUNT_ADD_IMAGE";
+
+const ACCOUNT_DISPLAY_IMAGE = "account/ACCOUNT_DISPLAY_IMAGE";
+const ACCOUNT_HIDE_IMAGE = "account/ACCOUNT_HIDE_IMAGE";
 
 // -- Actions --------------------------------------------------------------- //
 
@@ -231,6 +226,18 @@ export const accountAddImage = (fileJson: IFileJson) => async (
   dispatch({ type: ACCOUNT_ADD_IMAGE, payload: updatedImages });
 };
 
+export const accountDisplayImage = (fileJson: IFileJson) => async (
+  dispatch: any
+) => {
+  dispatch({ type: ACCOUNT_DISPLAY_IMAGE, payload: fileJson });
+  navigate("Display");
+};
+
+export const accountHideImage = () => async (dispatch: any) => {
+  dispatch({ type: ACCOUNT_HIDE_IMAGE });
+  goBack();
+};
+
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE = {
   uploading: false,
@@ -242,7 +249,8 @@ const INITIAL_STATE = {
   selected: [],
   imported: [],
   images: [],
-  account: {}
+  account: {},
+  display: null
 };
 
 export default (state = INITIAL_STATE, action: any) => {
@@ -369,6 +377,16 @@ export default (state = INITIAL_STATE, action: any) => {
       return {
         ...state,
         images: action.payload
+      };
+    case ACCOUNT_DISPLAY_IMAGE:
+      return {
+        ...state,
+        display: action.payload
+      };
+    case ACCOUNT_HIDE_IMAGE:
+      return {
+        ...state,
+        display: null
       };
     default:
       return state;

@@ -12,7 +12,7 @@ class AccountHeader extends React.Component<any, any> {
         <View style={styles.row}>
           <Section style={styles.section}>
             <View style={styles.innerRow}>
-              <Section style={styles.innerSectionOne}>
+              <Section>
                 <Image
                   style={{
                     width: 50,
@@ -23,7 +23,7 @@ class AccountHeader extends React.Component<any, any> {
                   source={require("../assets/profile.jpeg")}
                 />
               </Section>
-              <Section style={styles.innerSectionTwo}>
+              <Section>
                 <Text style={styles.username}>{`@${username}`}</Text>
               </Section>
             </View>
@@ -60,16 +60,9 @@ const styles = StyleSheet.create({
   },
   innerRow: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "center"
   },
-  innerSectionOne: {
-    justifyContent: "center",
-    width: "auto",
-    height: "auto",
-    flex: 4
-  },
-  innerSectionTwo: { width: "auto", height: "auto", flex: 6 },
   username: {
     color: "white",
     fontSize: 18,

@@ -4,14 +4,17 @@ import {
   StyleSheet,
   Text,
   View,
+  StatusBar,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  TouchableOpacity
 } from "react-native";
 import { connect } from "react-redux";
-import { accountImport } from "../../redux/_account";
+import { accountImport, accountDisplayImage } from "../../redux/_account";
 import AccountHeader from "../../components/AccountHeader";
 import Button from "../../components/Button";
 import { WINDOW_WIDTH } from "../../helpers/constants";
+import { IFileJson } from "../../helpers/types";
 
 class AccountProfileScreen extends React.Component<any, any> {
   static navigationOptions = {
@@ -19,12 +22,38 @@ class AccountProfileScreen extends React.Component<any, any> {
     headerTitle: "Profile"
   };
 
+  componentDidMount() {
+    if (!this.props.initiating) {
+      StatusBar.setBarStyle("light-content", true);
+    }
+  }
+
+  componentDidUpdate(prevProps: any) {
+    if (!this.props.initiating && prevProps.initiating) {
+      StatusBar.setBarStyle("light-content", true);
+    } else if (this.props.initiating && !prevProps.initiating) {
+      StatusBar.setBarStyle("default", true);
+    }
+    if (!this.props.display && prevProps.display) {
+      StatusBar.setBarStyle("light-content", true);
+    } else if (this.props.display && !prevProps.display) {
+      StatusBar.setBarStyle("default", true);
+    }
+  }
+
+  componentWillUnmount() {
+    StatusBar.setBarStyle("default", true);
+  }
+
+  onDisplayImage = (fileJson: IFileJson) => {
+    this.props.accountDisplayImage(fileJson);
+  };
+
   render() {
     const {
       initiating,
       uploading,
       loading,
-      account,
       username,
       selected,
       images
@@ -34,7 +63,7 @@ class AccountProfileScreen extends React.Component<any, any> {
     const uploadingLeft = selected.length - images.length;
     return !initiating ? (
       <View style={styles.container}>
-        <AccountHeader address={account.address} username={username} />
+        <AccountHeader username={username} />
         <View
           style={[styles.content, displayImages ? styles.displayImages : {}]}
         >
@@ -57,16 +86,20 @@ class AccountProfileScreen extends React.Component<any, any> {
               data={images}
               keyExtractor={(image: any) => image.name}
               renderItem={(item: any) => (
-                <Image
-                  style={{
-                    padding: 10,
-                    flex: 1,
-                    height: WINDOW_WIDTH / 3,
-                    width: WINDOW_WIDTH / 3
-                  }}
-                  resizeMode={"cover"}
-                  source={{ uri: item.item.file }}
-                />
+                <TouchableOpacity
+                  onPress={() => this.onDisplayImage(item.item)}
+                >
+                  <Image
+                    style={{
+                      padding: 10,
+                      flex: 1,
+                      height: WINDOW_WIDTH / 3,
+                      width: WINDOW_WIDTH / 3
+                    }}
+                    resizeMode={"cover"}
+                    source={{ uri: item.item.file }}
+                  />
+                </TouchableOpacity>
               )}
             />
           )}
@@ -125,13 +158,13 @@ const reduxProps = (reduxState: any) => ({
   initiating: reduxState.account.initiating,
   uploading: reduxState.account.uploading,
   loading: reduxState.account.loading,
-  account: reduxState.account.account,
   username: reduxState.account.username,
   selected: reduxState.account.selected,
-  images: reduxState.account.images
+  images: reduxState.account.images,
+  display: reduxState.account.display
 });
 
 export default connect(
   reduxProps,
-  { accountImport }
+  { accountImport, accountDisplayImage }
 )(AccountProfileScreen);
