@@ -4,15 +4,24 @@ import {
   asyncStorageDelete
 } from "./asyncStorage";
 import { writeFile, readFile, formatFilePath } from "../helpers/utils";
-import { pinFile, fetchFile } from "./api";
+import { apiPinFile, apiFetchFile, apiSetProfile, apiGetProfile } from "./api";
 import { IFileJson } from "./types";
 
 export async function saveProfile(address: string, profile: any) {
+  await apiSetProfile(address, profile);
   await asyncStorageSave(address, profile);
 }
 
 export async function getProfile(address: string) {
-  return await asyncStorageLoad(address);
+  let profile = null;
+  profile = await asyncStorageLoad(address);
+  if (!profile) {
+    const response = await apiGetProfile(address);
+    if (response && response.data.success) {
+      profile = response.data;
+    }
+  }
+  return profile;
 }
 
 export async function updateProfile(address: string, updatedProfile: any) {
@@ -37,7 +46,7 @@ export async function getPinnedFiles(address: string) {
           if (result) {
             image = JSON.parse(result);
           } else {
-            const response = await fetchFile(fileHash);
+            const response = await apiFetchFile(fileHash);
             image = response.data;
           }
 
@@ -55,7 +64,7 @@ export async function getPinnedFiles(address: string) {
 export async function savePinnedFile(address: string, fileJson: IFileJson) {
   const { pinnedFiles } = await getProfile(address);
 
-  const { data } = await pinFile(fileJson);
+  const { data } = await apiPinFile(fileJson);
 
   await writeFile(
     formatFilePath(data.IpfsHash),

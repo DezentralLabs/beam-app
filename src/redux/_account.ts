@@ -15,7 +15,7 @@ import {
 } from "../helpers/profile";
 import { loadWallet } from "../helpers/wallet";
 import { IFileJson } from "../helpers/types";
-import { pinFile, fetchFile } from "../helpers/api";
+import { apiPinFile, apiFetchFile } from "../helpers/api";
 import { navigate, goBack } from "../navigation";
 
 // -- Constants ------------------------------------------------------------- //
