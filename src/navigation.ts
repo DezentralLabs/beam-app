@@ -2,7 +2,8 @@ import {
   NavigationActions,
   NavigationContainerComponent,
   NavigationNavigateAction,
-  NavigationParams
+  NavigationParams,
+  NavigationBackActionPayload
 } from "react-navigation";
 
 let _navigator: NavigationContainerComponent | null;
@@ -32,8 +33,8 @@ export function navigate(
   }
 }
 
-export function goBack() {
+export function goBack(opts?: NavigationBackActionPayload) {
   if (_navigator) {
-    _navigator.dispatch(NavigationActions.back());
+    _navigator.dispatch(NavigationActions.back(opts));
   }
 }

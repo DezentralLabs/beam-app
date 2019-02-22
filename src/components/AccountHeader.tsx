@@ -36,9 +36,8 @@ class AccountHeader extends React.Component<any, any> {
 
 const styles = StyleSheet.create({
   card: {
-    paddingTop: STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 10 : 30,
+    paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: "#3b99fc",
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10
     // borderBottomWidth: 1,
@@ -71,7 +70,6 @@ const styles = StyleSheet.create({
   },
   innerSectionTwo: { width: "auto", height: "auto", flex: 6 },
   username: {
-    color: "white",
     fontSize: 18,
     fontWeight: "600",
     paddingLeft: 10

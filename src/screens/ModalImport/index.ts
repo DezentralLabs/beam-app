@@ -1,15 +1,12 @@
 import { createStackNavigator } from "react-navigation";
 
 import ModalImport from "./ModalImport";
-import ModalDisplay from "./ModalDisplay";
 
 const ModalStack = createStackNavigator(
   {
-    Import: ModalImport,
-    Display: ModalDisplay
+    Import: ModalImport
   },
   {
-    initialRouteName: "Import",
     mode: "modal"
   }
 );

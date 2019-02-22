@@ -10,7 +10,7 @@ class SelectableImage extends React.Component<any, any> {
 
   onPress = (item: any) => {
     this.setState({ selected: !this.state.selected });
-    console.log("SelectableImage onPress item", item);
+    // console.log("SelectableImage onPress item", item);
     this.props.onSelected(item);
   };
 

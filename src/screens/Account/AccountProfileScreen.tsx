@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   View,
-  StatusBar,
   Image,
   ActivityIndicator,
   TouchableOpacity
@@ -21,29 +20,6 @@ class AccountProfileScreen extends React.Component<any, any> {
     title: "Profile",
     headerTitle: "Profile"
   };
-
-  componentDidMount() {
-    if (!this.props.initiating) {
-      StatusBar.setBarStyle("light-content", true);
-    }
-  }
-
-  componentDidUpdate(prevProps: any) {
-    if (!this.props.initiating && prevProps.initiating) {
-      StatusBar.setBarStyle("light-content", true);
-    } else if (this.props.initiating && !prevProps.initiating) {
-      StatusBar.setBarStyle("default", true);
-    }
-    if (!this.props.display && prevProps.display) {
-      StatusBar.setBarStyle("light-content", true);
-    } else if (this.props.display && !prevProps.display) {
-      StatusBar.setBarStyle("default", true);
-    }
-  }
-
-  componentWillUnmount() {
-    StatusBar.setBarStyle("default", true);
-  }
 
   onDisplayImage = (fileJson: IFileJson) => {
     this.props.accountDisplayImage(fileJson);

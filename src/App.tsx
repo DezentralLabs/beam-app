@@ -5,7 +5,8 @@ import { accountInit } from "./redux/_account";
 import { setTopLevelNavigator } from "./navigation";
 import OnboardingStack from "./screens/Onboarding";
 import AccountStack from "./screens/Account";
-import ModalStack from "./screens/Modal";
+import ModalImportStack from "./screens/ModalImport";
+import ModalDisplayStack from "./screens/ModalDisplay";
 import { deleteMnemonic } from "./helpers/wallet";
 import { deleteProfile } from "./helpers/profile";
 
@@ -24,7 +25,8 @@ const MainStack = createStackNavigator(
 const AppNavigator = createStackNavigator(
   {
     Main: MainStack,
-    Modal: ModalStack
+    ModalImport: ModalImportStack,
+    ModalDisplay: ModalDisplayStack
   },
   {
     initialRouteName: "Main",

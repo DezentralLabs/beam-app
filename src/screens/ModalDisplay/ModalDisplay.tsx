@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import { accountHideImage } from "../../redux/_account";
 import { WINDOW_WIDTH } from "../../helpers/constants";
@@ -10,21 +10,25 @@ class ModalDisplay extends React.Component<any, any> {
     headerTitle: "Display"
   };
 
+  onHideImage = () => this.props.accountHideImage();
+
   render = () => {
     const { display } = this.props;
     return (
       <View style={styles.container}>
         <View style={styles.content}>
-          <Image
-            style={{
-              padding: 10,
-              flex: 1,
-              height: WINDOW_WIDTH - 10,
-              width: WINDOW_WIDTH - 10
-            }}
-            resizeMode={"cover"}
-            source={{ uri: display.file }}
-          />
+          {display && (
+            <TouchableOpacity onPress={this.onHideImage}>
+              <Image
+                style={{
+                  flex: 1,
+                  width: WINDOW_WIDTH
+                }}
+                resizeMode={"cover"}
+                source={{ uri: display.file }}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     );

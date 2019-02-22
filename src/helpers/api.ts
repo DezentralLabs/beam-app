@@ -2,7 +2,7 @@ import axios from "axios";
 import { IFileJson, IProfile } from "./types";
 
 export const apiPinFile = async (fileJson: IFileJson) => {
-  console.log("[apiPinFile] fileJson", fileJson);
+  // console.log("[apiPinFile] fileJson", fileJson);
   const response = await axios.post(
     "https://api.pinata.cloud/pinning/pinJSONToIPFS",
     fileJson,
@@ -22,7 +22,7 @@ export const apiPinFile = async (fileJson: IFileJson) => {
 };
 
 export const apiFetchFile = async (fileHash: string) => {
-  console.log("[apiFetchFile] fileHash", fileHash);
+  // console.log("[apiFetchFile] fileHash", fileHash);
   const response = await axios.get(`https://ipfs.io/ipfs/${fileHash}`, {
     headers: {
       Accept: "application/json",
@@ -35,7 +35,7 @@ export const apiFetchFile = async (fileHash: string) => {
 export const apiGetProfile = async (address: string) => {
   console.log("[apiGetProfile] address", address);
   const response = await axios.get(
-    `https://beam-backend-axqllpaslx.now.sh/${address}`,
+    `https://beam-backend-mkfadzpuwf.now.sh/${address}`,
     {
       headers: {
         Accept: "application/json",
@@ -49,8 +49,8 @@ export const apiGetProfile = async (address: string) => {
 export const apiSetProfile = async (address: string, profile: IProfile) => {
   console.log("[apiSetProfile] address", address);
   const response = await axios.post(
-    `https://beam-backend-axqllpaslx.now.sh/${address}`,
-    profile,
+    `https://beam-backend-mkfadzpuwf.now.sh/${address}`,
+    { profile },
     {
       headers: {
         Accept: "application/json",

@@ -51,15 +51,14 @@ const ACCOUNT_HIDE_IMAGE = "account/ACCOUNT_HIDE_IMAGE";
 
 export const accountInit = () => async (dispatch: any) => {
   dispatch({ type: ACCOUNT_INIT_REQUEST });
-  console.log(ACCOUNT_INIT_REQUEST);
   try {
     const account = await loadWallet();
-    console.log("[accountInit] account", account);
+    // console.log("[accountInit] account", account);
     if (account) {
       const profile = await getProfile(account.address);
       const username = profile.username;
-      console.log("[accountInit] account.address", account.address);
-      console.log("[accountInit] profile.username", profile.username);
+      // console.log("[accountInit] account.address", account.address);
+      // console.log("[accountInit] profile.username", profile.username);
 
       dispatch({
         type: ACCOUNT_INIT_SUCCESS,
@@ -234,8 +233,8 @@ export const accountDisplayImage = (fileJson: IFileJson) => async (
 };
 
 export const accountHideImage = () => async (dispatch: any) => {
-  dispatch({ type: ACCOUNT_HIDE_IMAGE });
   goBack();
+  dispatch({ type: ACCOUNT_HIDE_IMAGE });
 };
 
 // -- Reducer --------------------------------------------------------------- //
@@ -254,6 +253,7 @@ const INITIAL_STATE = {
 };
 
 export default (state = INITIAL_STATE, action: any) => {
+  console.log("==========>", action.type, "<==========");
   switch (action.type) {
     case ACCOUNT_INIT_REQUEST:
       return {
