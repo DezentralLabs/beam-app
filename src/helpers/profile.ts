@@ -28,10 +28,10 @@ export async function getProfile(address: string): Promise<IProfile> {
   let profile = await asyncStorageLoad(key);
   // console.log("[getProfile] asyncStorageLoad profile", profile);
   if (!profile) {
-    const response = await apiGetProfile(address);
+    const result = await apiGetProfile(address);
     // console.log("[getProfile] apiGetProfile profile", response.data);
-    if (response && response.data.success) {
-      profile = response.data.result;
+    if (result) {
+      profile = result;
     }
   }
   return profile;
@@ -45,11 +45,6 @@ export async function updateProfile(address: string, updatedProfile: any) {
 
 export async function getPinnedFiles(address: string) {
   const { pinnedFiles } = await getProfile(address);
-
-  async function fallbackFetchFile(fileHash: string) {
-    const response = await apiFetchFile(fileHash);
-    return response.data;
-  }
 
   let images: IFileJson[] = [];
   if (pinnedFiles && pinnedFiles.length) {
@@ -66,10 +61,10 @@ export async function getPinnedFiles(address: string) {
             if (result) {
               image = JSON.parse(result);
             } else {
-              image = await fallbackFetchFile(fileHash);
+              image = await apiFetchFile(fileHash);
             }
           } catch (error) {
-            image = await fallbackFetchFile(fileHash);
+            image = await apiFetchFile(fileHash);
           }
 
           if (image) {
@@ -83,12 +78,14 @@ export async function getPinnedFiles(address: string) {
 }
 
 export async function savePinnedFile(fileJson: IFileJson) {
-  const response = await apiPinFile(fileJson);
-  const fileHash = response.data.IpfsHash;
+  const fileHash = await apiPinFile(fileJson);
 
-  await writeFile(formatFilePath(fileHash), JSON.stringify(fileJson), "utf8");
+  if (fileHash) {
+    await writeFile(formatFilePath(fileHash), JSON.stringify(fileJson), "utf8");
+    return fileHash;
+  }
 
-  return fileHash;
+  return null;
 }
 
 // export async function removePinnedFile(address: string, ipfsHash: string) {

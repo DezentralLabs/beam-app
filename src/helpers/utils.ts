@@ -136,3 +136,38 @@ export async function scanDirectory(
     .reverse();
   return files;
 }
+
+export function sanitizeHex(hex: string): string {
+  hex = hex.substring(0, 2) === "0x" ? hex.substring(2) : hex;
+  if (hex === "") {
+    return "";
+  }
+  hex = hex.length % 2 !== 0 ? "0" + hex : hex;
+  return "0x" + hex;
+}
+
+export function convertUtf8ToBuffer(utf8: string): Buffer {
+  const result = new Buffer(utf8, "utf8");
+  return result;
+}
+
+export function convertBufferToUtf8(buffer: Buffer): string {
+  const result = buffer.toString("utf8");
+  return result;
+}
+
+export function convertBufferToHex(buffer: Buffer): string {
+  const result = buffer.toString("hex");
+  return result;
+}
+
+export function convertHexToBuffer(hex: string): Buffer {
+  const result = new Buffer(hex, "hex");
+  return result;
+}
+
+export function concatBuffers(...args: Buffer[]): Buffer {
+  const hex: string = args.map(b => convertBufferToHex(b)).join("");
+  const result: Buffer = convertHexToBuffer(hex);
+  return result;
+}

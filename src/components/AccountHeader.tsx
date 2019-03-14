@@ -80,17 +80,19 @@ const styles = StyleSheet.create({
   innerSectionTwo: {
     width: "auto",
     height: "auto",
-    flex: 8
+    flex: 8,
+    paddingLeft: 15,
+    paddingRight: 15
   },
   username: {
     fontSize: 18,
-    fontWeight: "600",
-    paddingLeft: 15
+    fontWeight: "600"
+    // paddingLeft: 15
   },
   monospace: {
     fontFamily: "Menlo-Regular",
-    marginTop: 5,
-    paddingLeft: 15
+    marginTop: 5
+    // paddingLeft: 15
   }
 });
 

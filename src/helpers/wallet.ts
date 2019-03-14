@@ -1,7 +1,14 @@
-import EthCrypto from "eth-crypto";
 import * as ethers from "ethers";
+
 import { keychainSave, keychainLoad, keychainDelete } from "./keychain";
-import { IEncryptedData } from "./types";
+import {
+  convertHexToBuffer,
+  sanitizeHex,
+  convertBufferToHex,
+  convertUtf8ToBuffer,
+  convertBufferToUtf8
+} from "./utils";
+import { aesCbcDecrypt, aesCbcEncrypt } from "./crypto";
 
 const standardPath = "m/44'/60'/0'/0";
 
@@ -45,6 +52,8 @@ export async function createWallet() {
   const path = generatePath();
   const account = ethers.Wallet.fromMnemonic(mnemonic, path);
   console.log("[createWallet] account", account);
+  activeAccount = account;
+  console.log("[createWallet] activeAccount", activeAccount);
   await saveMnemonic(mnemonic);
 
   return account;
@@ -57,6 +66,8 @@ export async function loadWallet() {
     const path = generatePath();
     const account = ethers.Wallet.fromMnemonic(mnemonic, path);
     console.log("[loadWallet] account", account);
+    activeAccount = account;
+    console.log("[loadWallet] activeAccount", activeAccount);
     return account;
   }
   return null;
@@ -99,11 +110,13 @@ export async function signMessage(message: any) {
   return null;
 }
 
-export async function encrypt(message: string): Promise<IEncryptedData | null> {
+export async function encrypt(message: string): Promise<string | null> {
   if (activeAccount) {
     const { privateKey } = activeAccount;
-    const publicKey = EthCrypto.publicKeyByPrivateKey(privateKey);
-    const result = await EthCrypto.encryptWithPublicKey(publicKey, message);
+    const privateKeyBuffer = convertHexToBuffer(sanitizeHex(privateKey));
+    const messageBuffer = convertUtf8ToBuffer(message);
+    const cipher = await aesCbcEncrypt(privateKeyBuffer, messageBuffer);
+    const result = convertBufferToUtf8(cipher);
     return result;
   } else {
     console.error("No Active Account");
@@ -111,15 +124,13 @@ export async function encrypt(message: string): Promise<IEncryptedData | null> {
   return null;
 }
 
-export async function decrypt(
-  encryptedData: IEncryptedData
-): Promise<string | null> {
+export async function decrypt(cipherString: string): Promise<string | null> {
   if (activeAccount) {
     const { privateKey } = activeAccount;
-    const result = await EthCrypto.decryptWithPrivateKey(
-      privateKey,
-      encryptedData
-    );
+    const privateKeyBuffer = convertHexToBuffer(sanitizeHex(privateKey));
+    const cipher = convertHexToBuffer(cipherString);
+    const decryptedData = await aesCbcDecrypt(cipher, privateKeyBuffer);
+    const result = convertBufferToHex(decryptedData);
     return result;
   } else {
     console.error("No Active Account");
