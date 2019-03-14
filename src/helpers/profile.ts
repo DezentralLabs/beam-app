@@ -5,7 +5,7 @@ import {
 } from "./asyncStorage";
 import { writeFile, readFile, formatFilePath } from "../helpers/utils";
 import { apiPinFile, apiFetchFile, apiSetProfile, apiGetProfile } from "./api";
-import { IFileJson } from "./types";
+import { IFileJson, IProfile } from "./types";
 
 const profileKey = (address: string) => {
   const KEY_PREFIX = "BEAM_PROFILE";
@@ -23,7 +23,7 @@ export async function saveProfile(address: string, profile: any) {
   console.log("Successfully => asyncStorageSave");
 }
 
-export async function getProfile(address: string) {
+export async function getProfile(address: string): Promise<IProfile> {
   const key = profileKey(address);
   let profile = await asyncStorageLoad(key);
   // console.log("[getProfile] asyncStorageLoad profile", profile);
@@ -54,18 +54,23 @@ export async function getPinnedFiles(address: string) {
           let image = null;
 
           const filePath = formatFilePath(fileHash);
-          const result = await readFile(filePath);
 
-          if (result) {
-            image = JSON.parse(result);
-          } else {
-            const response = await apiFetchFile(fileHash);
-            image = response.data;
-          }
+          try {
+            const result = await readFile(filePath);
 
-          if (image) {
-            // console.log("images.push(image)", image);
-            images.push(image);
+            if (result) {
+              image = JSON.parse(result);
+            } else {
+              const response = await apiFetchFile(fileHash);
+              image = response.data;
+            }
+
+            if (image) {
+              // console.log("images.push(image)", image);
+              images.push(image);
+            }
+          } catch (error) {
+            // do nothing
           }
         }
       )
@@ -74,26 +79,20 @@ export async function getPinnedFiles(address: string) {
   return images;
 }
 
-export async function savePinnedFile(address: string, fileJson: IFileJson) {
-  const { pinnedFiles } = await getProfile(address);
-
+export async function savePinnedFile(fileJson: IFileJson) {
   const response = await apiPinFile(fileJson);
   const fileHash = response.data.IpfsHash;
 
   await writeFile(formatFilePath(fileHash), JSON.stringify(fileJson), "utf8");
 
-  const newPinnedFiles = pinnedFiles ? [...pinnedFiles, fileHash] : [fileHash];
-
-  await updateProfile(address, { pinnedFiles: newPinnedFiles });
-
   return fileHash;
 }
 
-export async function removePinnedFile(address: string, ipfsHash: string) {
-  const { pinnedFiles } = await getProfile(address);
-  const newPinnedFiles = pinnedFiles.filter((file: any) => file === ipfsHash);
-  await updateProfile(address, { pinnedFiles: newPinnedFiles });
-}
+// export async function removePinnedFile(address: string, ipfsHash: string) {
+//   const { pinnedFiles } = await getProfile(address);
+//   const newPinnedFiles = pinnedFiles.filter((file: any) => file === ipfsHash);
+//   await updateProfile(address, { pinnedFiles: newPinnedFiles });
+// }
 
 export async function deleteProfile(address: string) {
   const key = profileKey(address);

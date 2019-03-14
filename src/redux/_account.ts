@@ -4,7 +4,8 @@ import {
   getProfile,
   saveProfile,
   savePinnedFile,
-  getPinnedFiles
+  getPinnedFiles,
+  updateProfile
 } from "../helpers/profile";
 import { loadWallet } from "../helpers/wallet";
 import { IFileJson } from "../helpers/types";
@@ -196,15 +197,21 @@ export const accountUpdateSelected = (file: IFileJson) => async (
 };
 
 export const accountUpload = () => async (dispatch: any, getState: any) => {
-  const { selected } = getState().account;
+  const { account, selected } = getState().account;
   dispatch({ type: ACCOUNT_UPLOAD_REQUEST });
   try {
     goBack();
-    await Promise.all(
-      selected.map(async (fileJson: IFileJson) =>
-        dispatch(accountAddImage(fileJson))
-      )
+    const newPinnedFiles = await Promise.all(
+      selected.map(async (fileJson: IFileJson) => {
+        const fileHash = await dispatch(accountAddImage(fileJson));
+        return fileHash;
+      })
     );
+    const profile = await getProfile(account.address);
+    const updatedPinnedFiles = profile.pinnedFiles
+      ? [...profile.pinnedFiles, ...newPinnedFiles]
+      : newPinnedFiles;
+    updateProfile(account.address, { pinnedFiles: updatedPinnedFiles });
     dispatch({ type: ACCOUNT_UPLOAD_SUCCESS });
   } catch (error) {
     console.error(error);
@@ -216,13 +223,15 @@ export const accountAddImage = (fileJson: IFileJson) => async (
   dispatch: any,
   getState: any
 ) => {
-  const { account, images } = getState().account;
+  const { images } = getState().account;
 
-  await savePinnedFile(account.address, fileJson);
+  const fileHash = await savePinnedFile(fileJson);
 
   const updatedImages = [...images, fileJson];
 
   dispatch({ type: ACCOUNT_ADD_IMAGE, payload: updatedImages });
+
+  return fileHash;
 };
 
 export const accountDisplayImage = (fileJson: IFileJson) => async (

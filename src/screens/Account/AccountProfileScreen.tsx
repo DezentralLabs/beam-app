@@ -30,6 +30,7 @@ class AccountProfileScreen extends React.Component<any, any> {
       initiating,
       uploading,
       loading,
+      address,
       username,
       selected,
       images
@@ -39,7 +40,7 @@ class AccountProfileScreen extends React.Component<any, any> {
     const uploadingLeft = selected.length - images.length;
     return !initiating ? (
       <View style={styles.container}>
-        <AccountHeader username={username} />
+        <AccountHeader address={address} username={username} />
         <View
           style={[styles.content, displayImages ? styles.displayImages : {}]}
         >
@@ -134,6 +135,7 @@ const reduxProps = (reduxState: any) => ({
   initiating: reduxState.account.initiating,
   uploading: reduxState.account.uploading,
   loading: reduxState.account.loading,
+  address: reduxState.account.address,
   username: reduxState.account.username,
   selected: reduxState.account.selected,
   images: reduxState.account.images,
