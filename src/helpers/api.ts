@@ -16,7 +16,7 @@ export const apiPinFile = async (
   const response = await axios.post(
     "https://api.pinata.cloud/pinning/pinJSONToIPFS",
     {
-      cipher
+      data: cipher
     },
     {
       headers: {
@@ -51,16 +51,16 @@ export const apiFetchFile = async (
     }
   });
 
-  let cipher = null;
+  let data = null;
 
-  if (response && response.data.cipher) {
-    cipher = response.data.cipher;
+  if (response && response.data.data) {
+    data = response.data.data;
   }
 
   let fileJsonString = null;
 
-  if (cipher) {
-    fileJsonString = await decrypt(cipher);
+  if (data) {
+    fileJsonString = await decrypt(data);
   }
 
   let fileJson = null;
