@@ -51,8 +51,17 @@ export const apiFetchFile = async (
     }
   });
 
-  const { cipher } = response.data;
-  const fileJsonString = await decrypt(cipher);
+  let cipher = null;
+
+  if (response && response.data.cipher) {
+    cipher = response.data.cipher;
+  }
+
+  let fileJsonString = null;
+
+  if (cipher) {
+    fileJsonString = await decrypt(cipher);
+  }
 
   let fileJson = null;
 
