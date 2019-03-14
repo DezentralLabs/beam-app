@@ -46,6 +46,11 @@ export async function updateProfile(address: string, updatedProfile: any) {
 export async function getPinnedFiles(address: string) {
   const { pinnedFiles } = await getProfile(address);
 
+  async function fallbackFetchFile(fileHash: string) {
+    const response = await apiFetchFile(fileHash);
+    return response.data;
+  }
+
   let images: IFileJson[] = [];
   if (pinnedFiles && pinnedFiles.length) {
     await Promise.all(
@@ -61,16 +66,14 @@ export async function getPinnedFiles(address: string) {
             if (result) {
               image = JSON.parse(result);
             } else {
-              const response = await apiFetchFile(fileHash);
-              image = response.data;
-            }
-
-            if (image) {
-              // console.log("images.push(image)", image);
-              images.push(image);
+              image = await fallbackFetchFile(fileHash);
             }
           } catch (error) {
-            // do nothing
+            image = await fallbackFetchFile(fileHash);
+          }
+
+          if (image) {
+            images.push(image);
           }
         }
       )
