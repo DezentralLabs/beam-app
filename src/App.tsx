@@ -13,10 +13,10 @@ import { deleteProfile } from "./helpers/profile";
 const MainStack = createStackNavigator(
   {
     Onboarding: OnboardingStack,
-    Account: AccountStack
+    AccountStack: AccountStack
   },
   {
-    initialRouteName: "Account",
+    initialRouteName: "AccountStack",
     headerMode: "none",
     mode: "modal"
   }

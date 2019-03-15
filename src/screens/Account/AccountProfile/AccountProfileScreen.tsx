@@ -9,11 +9,11 @@ import {
   TouchableOpacity
 } from "react-native";
 import { connect } from "react-redux";
-import { accountImport, accountDisplayImage } from "../../redux/_account";
-import AccountHeader from "../../components/AccountHeader";
-import Button from "../../components/Button";
-import { WINDOW_WIDTH } from "../../helpers/constants";
-import { IFileJson } from "../../helpers/types";
+import { accountImport, accountDisplayImage } from "../../../redux/_account";
+import AccountHeader from "../../../components/AccountHeader";
+import Button from "../../../components/Button";
+import { WINDOW_WIDTH } from "../../../helpers/constants";
+import { IFileJson } from "../../../helpers/types";
 
 class AccountProfileScreen extends React.Component<any, any> {
   static navigationOptions = {
@@ -47,7 +47,7 @@ class AccountProfileScreen extends React.Component<any, any> {
           {!images.length ? (
             !loading ? (
               <Button width={200} onPress={this.props.accountImport}>
-                Import
+                {`Import ZIP`}
               </Button>
             ) : (
               <ActivityIndicator size="small" color="#a5a5a5" />
@@ -95,7 +95,7 @@ class AccountProfileScreen extends React.Component<any, any> {
           >
             {!uploading ? (
               <Button width={200} onPress={this.props.accountImport}>
-                Import
+                {`Import ZIP`}
               </Button>
             ) : (
               <Text style={{ fontWeight: "600", textAlign: "center" }}>

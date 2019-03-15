@@ -73,6 +73,15 @@ export async function loadWallet() {
   return null;
 }
 
+export function getMnemonic() {
+  if (activeAccount) {
+    return activeAccount.mnemonic;
+  } else {
+    console.error("No Active Account");
+  }
+  return null;
+}
+
 export function getAllAddresses(n?: number) {
   addresses = generateAddresses(n);
   return addresses;
