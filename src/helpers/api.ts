@@ -1,22 +1,22 @@
 import axios, { AxiosInstance } from "axios";
 import { IFileJson, IProfile } from "./types";
-import { encrypt, decrypt } from "./wallet";
+// import { encrypt, decrypt } from "./wallet";
 
 export const apiPinFile = async (
   fileJson: IFileJson
 ): Promise<string | null> => {
-  const fileJsonString = JSON.stringify(fileJson);
-  const cipher = await encrypt(fileJsonString);
+  // const fileJsonString = JSON.stringify(fileJson);
+  // const cipher = await encrypt(fileJsonString);
 
-  if (!cipher) {
-    console.error("Failed to pin file");
-    return null;
-  }
+  // if (!cipher) {
+  //   console.error("Failed to pin file");
+  //   return null;
+  // }
 
   const response = await axios.post(
     "https://api.pinata.cloud/pinning/pinJSONToIPFS",
     {
-      data: cipher
+      data: fileJson
     },
     {
       headers: {
@@ -57,19 +57,19 @@ export const apiFetchFile = async (
     data = response.data.data;
   }
 
-  let fileJsonString = null;
+  // let fileJsonString = null;
 
-  if (data) {
-    fileJsonString = await decrypt(data);
-  }
+  // if (data) {
+  //   fileJsonString = await decrypt(data);
+  // }
 
-  let fileJson = null;
+  // let fileJson = null;
 
-  if (fileJsonString) {
-    fileJson = JSON.parse(fileJsonString);
-  }
+  // if (fileJsonString) {
+  //   fileJson = JSON.parse(fileJsonString);
+  // }
 
-  return fileJson;
+  return data;
 };
 
 const beamApi: AxiosInstance = axios.create({
