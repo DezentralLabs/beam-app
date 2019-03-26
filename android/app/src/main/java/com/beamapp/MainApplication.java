@@ -3,6 +3,7 @@ package com.beamapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
 import com.oblador.keychain.KeychainPackage;
 import com.tradle.react.UdpSocketsModule;
 import com.peel.react.TcpSocketsModule;
@@ -11,7 +12,6 @@ import com.bitgo.randombytes.RandomBytesPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.rnfs.RNFSPackage;
 import com.rnziparchive.RNZipArchivePackage;
-import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -32,6 +32,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativeDocumentPicker(),
             new KeychainPackage(),
             new UdpSocketsModule(),
             new TcpSocketsModule(),
@@ -39,8 +40,7 @@ public class MainApplication extends Application implements ReactApplication {
             new RandomBytesPackage(),
             new RNGestureHandlerPackage(),
             new RNFSPackage(),
-            new RNZipArchivePackage(),
-            new ReactNativeDocumentPicker()
+            new RNZipArchivePackage()
       );
     }
 

@@ -49,11 +49,14 @@ class AccountMnemonicScreen extends React.Component<any, any> {
               </Button>
             </React.Fragment>
           ) : (
-            <TouchableOpacity onPress={this.copyToClipboard}>
-              <Text style={styles.mnemonic}>
-                {mnemonic || "Cannot access mnemonic"}
-              </Text>
-            </TouchableOpacity>
+            <React.Fragment>
+              <TouchableOpacity onPress={this.copyToClipboard}>
+                <Text style={styles.mnemonic}>
+                  {mnemonic || "Cannot access mnemonic"}
+                </Text>
+                <Text style={styles.helper}>{"Click to copy"}</Text>
+              </TouchableOpacity>
+            </React.Fragment>
           )}
         </View>
       </View>
@@ -85,6 +88,12 @@ const styles = StyleSheet.create({
   mnemonic: {
     fontFamily: "Menlo-Regular",
     fontSize: 18
+  },
+  helper: {
+    textAlign: "center",
+    marginTop: 15,
+    fontSize: 16,
+    color: "#ccc"
   }
 });
 

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "./node_modules/.bin/rn-nodeify --hack --install",
-    "clean:cache": "rm -rf $TMPDIR/react-* && npm cache clean --force && npm cache verify",
+    "clean:cache": "rm -rf $TMPDIR/react-* && npm cache clean --force && npm cache verify && watchman watch-del-all",
     "start": "npm run clean:cache && react-native start --reset-cache",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -26,7 +26,7 @@
     "react": "16.3.1",
     "react-native": "~0.55.2",
     "react-native-crypto": "^2.1.2",
-    "react-native-document-picker": "^2.2.0",
+    "react-native-document-picker": "^2.3.0",
     "react-native-fs": "^2.13.3",
     "react-native-gesture-handler": "^1.0.14",
     "react-native-keychain": "^3.0.0",

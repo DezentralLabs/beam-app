@@ -10,6 +10,7 @@ import {
 import { loadWallet } from "../helpers/wallet";
 import { IFileJson } from "../helpers/types";
 import { navigate, goBack } from "../navigation";
+// import { Alert } from "react-native";
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -54,12 +55,13 @@ export const accountInit = () => async (dispatch: any) => {
   dispatch({ type: ACCOUNT_INIT_REQUEST });
   try {
     const account = await loadWallet();
+    // Alert.alert("[accountInit] account", JSON.stringify(account));
     // console.log("[accountInit] account", account);
     if (account) {
       const profile = await getProfile(account.address);
       const username = profile.username;
-      // console.log("[accountInit] account.address", account.address);
-      // console.log("[accountInit] profile.username", profile.username);
+      // Alert.alert("[accountInit] profile", JSON.stringify(profile));
+      // console.log("[accountInit] profile", profile);
 
       dispatch({
         type: ACCOUNT_INIT_SUCCESS,
@@ -90,10 +92,17 @@ export const accountLoadPinnedFiles = () => async (
 ) => {
   const { account } = getState().account;
 
+  // Alert.alert("[accountLoadPinnedFiles] account", JSON.stringify(account));
+  // console.log("[accountLoadPinnedFiles] account", account);
+
   dispatch({ type: ACCOUNT_LOAD_PINNED_REQUEST });
 
   try {
     const images = await getPinnedFiles(account.address);
+
+    // Alert.alert("[accountLoadPinnedFiles] images", JSON.stringify(images));
+    // console.log("[accountLoadPinnedFiles] images", images);
+
     dispatch({
       type: ACCOUNT_LOAD_PINNED_SUCCESS,
       payload: images
