@@ -14,6 +14,7 @@ class ModalImport extends React.Component<any, any> {
   };
 
   onSelected = (file: IFileJson) => {
+    console.log("[onSelected] file", file);
     this.props.accountUpdateSelected(file);
   };
 

@@ -33,11 +33,12 @@ class AccountProfileScreen extends React.Component<any, any> {
       address,
       username,
       selected,
+      uploaded,
       images
     } = this.props;
     const displayImages = !loading && images.length;
     const uploadingTotal = selected.length;
-    const uploadingLeft = selected.length - images.length;
+    const uploadingLeft = selected.length - uploaded.length;
     return !initiating ? (
       <View style={styles.container}>
         <AccountHeader address={address} username={username} />
@@ -138,6 +139,7 @@ const reduxProps = (reduxState: any) => ({
   address: reduxState.account.address,
   username: reduxState.account.username,
   selected: reduxState.account.selected,
+  uploaded: reduxState.account.uploaded,
   images: reduxState.account.images,
   display: reduxState.account.display
 });

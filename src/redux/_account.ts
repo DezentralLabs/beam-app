@@ -186,11 +186,16 @@ export const accountUpdateSelected = (file: IFileJson) => async (
   dispatch: any,
   getState: any
 ) => {
+  console.log("[accountUpdateSelected] file", file);
   let selected: IFileJson[] = [];
   let isNewFile = true;
   const prevSelected = getState().account.selected;
 
+  console.log("[accountUpdateSelected] prevSelected", prevSelected);
+
   prevSelected.forEach((prevFile: IFileJson) => {
+    console.log("[accountUpdateSelected] prevFile.name", prevFile.name);
+    console.log("[accountUpdateSelected] file.name", file.name);
     if (prevFile.name !== file.name) {
       selected.push(prevFile);
     } else {
@@ -198,9 +203,13 @@ export const accountUpdateSelected = (file: IFileJson) => async (
     }
   });
 
+  console.log("[accountUpdateSelected] isNewFile", isNewFile);
+
   if (isNewFile) {
     selected.push(file);
   }
+
+  console.log("[accountUpdateSelected] selected", selected);
 
   dispatch({ type: ACCOUNT_UPDATE_SELECTED, payload: selected });
 };
@@ -212,14 +221,17 @@ export const accountUpload = () => async (dispatch: any, getState: any) => {
     goBack();
     const newPinnedFiles = await Promise.all(
       selected.map(async (fileJson: IFileJson) => {
-        const fileHash = await dispatch(accountAddImage(fileJson));
+        const fileHash = await savePinnedFile(fileJson);
+        dispatch({ type: ACCOUNT_ADD_IMAGE, payload: fileJson });
         return fileHash;
       })
     );
     const profile = await getProfile(account.address);
+    console.log("[accountUpload] newPinnedFiles", newPinnedFiles);
     const updatedPinnedFiles = profile.pinnedFiles
       ? [...profile.pinnedFiles, ...newPinnedFiles]
       : newPinnedFiles;
+    console.log("[accountUpload] updatedPinnedFiles", updatedPinnedFiles);
     updateProfile(account.address, { pinnedFiles: updatedPinnedFiles });
     dispatch({ type: ACCOUNT_UPLOAD_SUCCESS });
   } catch (error) {
@@ -228,20 +240,20 @@ export const accountUpload = () => async (dispatch: any, getState: any) => {
   }
 };
 
-export const accountAddImage = (fileJson: IFileJson) => async (
-  dispatch: any,
-  getState: any
-) => {
-  const { images } = getState().account;
+// export const accountAddImage = (fileJson: IFileJson) => async (
+//   dispatch: any,
+//   getState: any
+// ) => {
+//   // const { images } = getState().account;
 
-  const fileHash = await savePinnedFile(fileJson);
+//   const fileHash = await savePinnedFile(fileJson);
 
-  const updatedImages = [...images, fileJson];
+//   // const updatedImages = [...images, fileJson];
 
-  dispatch({ type: ACCOUNT_ADD_IMAGE, payload: updatedImages });
+//   dispatch({ type: ACCOUNT_ADD_IMAGE, payload: fileJson });
 
-  return fileHash;
-};
+//   return fileHash;
+// };
 
 export const accountDisplayImage = (fileJson: IFileJson) => async (
   dispatch: any
@@ -265,13 +277,17 @@ const INITIAL_STATE = {
   address: "",
   selected: [],
   imported: [],
+  uploaded: [],
   images: [],
   account: {},
   display: null
 };
 
 export default (state = INITIAL_STATE, action: any) => {
-  console.log("==========>", action.type, "<==========");
+  console.log("=============================================");
+  console.log("==========>", action.type);
+  console.log("==========>", action.payload);
+  console.log("=============================================");
   switch (action.type) {
     case ACCOUNT_INIT_REQUEST:
       return {
@@ -364,7 +380,9 @@ export default (state = INITIAL_STATE, action: any) => {
       return {
         ...state,
         loading: false,
-        imported: action.payload
+        imported: action.payload,
+        selected: [],
+        uploaded: []
       };
     case ACCOUNT_IMPORT_FAILURE:
       return {
@@ -384,17 +402,22 @@ export default (state = INITIAL_STATE, action: any) => {
     case ACCOUNT_UPLOAD_SUCCESS:
       return {
         ...state,
-        uploading: false
+        uploading: false,
+        selected: [],
+        uploaded: []
       };
     case ACCOUNT_UPLOAD_FAILURE:
       return {
         ...state,
-        uploading: false
+        uploading: false,
+        selected: [],
+        uploaded: []
       };
     case ACCOUNT_ADD_IMAGE:
       return {
         ...state,
-        images: action.payload
+        images: [...state.images, action.payload],
+        uploaded: [...state.uploaded, action.payload]
       };
     case ACCOUNT_DISPLAY_IMAGE:
       return {

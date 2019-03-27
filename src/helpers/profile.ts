@@ -52,7 +52,9 @@ export async function getProfile(address: string): Promise<IProfile> {
 
 export async function updateProfile(address: string, updatedProfile: any) {
   const profile = await getProfile(address);
+  console.log("[updateProfile] profile", profile);
   const newProfile = { ...profile, ...updatedProfile };
+  console.log("[updateProfile] newProfile", newProfile);
   await saveProfile(address, newProfile);
 }
 

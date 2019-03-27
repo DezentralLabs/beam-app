@@ -60,8 +60,10 @@ export function selectFile(): Promise<{
       },
       (error: Error, result: any) => {
         if (error) {
+          console.log("[selectFile] error", error);
           reject(error);
         }
+        console.log("[selectFile] result", result);
         resolve(result);
       }
     );
