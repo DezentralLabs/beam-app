@@ -20,7 +20,11 @@ export async function saveProfile(address: string, profile: any) {
   await asyncStorageSave(key, profile);
 }
 
-export async function getProfile(address: string): Promise<IProfile> {
+export async function getProfile(address: string): Promise<IProfile | null> {
+  if (!address) {
+    return null;
+  }
+
   const key = profileKey(address);
 
   let profile = await asyncStorageLoad(key);
@@ -48,21 +52,23 @@ export async function updatePinnedFiles(
   newPinnedFiles: any[]
 ) {
   const profile = await getProfile(address);
-  console.log("[updatePinnedFiles] newPinnedFiles", newPinnedFiles);
-  const updatedPinnedFiles = profile.pinnedFiles
-    ? [...profile.pinnedFiles, ...newPinnedFiles]
-    : newPinnedFiles;
-  console.log("[updatePinnedFiles] updatedPinnedFiles", updatedPinnedFiles);
-  updateProfile(address, { pinnedFiles: updatedPinnedFiles });
+  if (profile) {
+    console.log("[updatePinnedFiles] newPinnedFiles", newPinnedFiles);
+    const updatedPinnedFiles = profile.pinnedFiles
+      ? [...profile.pinnedFiles, ...newPinnedFiles]
+      : newPinnedFiles;
+    console.log("[updatePinnedFiles] updatedPinnedFiles", updatedPinnedFiles);
+    updateProfile(address, { pinnedFiles: updatedPinnedFiles });
+  }
 }
 
 export async function getPinnedFiles(address: string) {
-  const { pinnedFiles } = await getProfile(address);
+  const profile = await getProfile(address);
 
   let images: IFileJson[] = [];
-  if (pinnedFiles && pinnedFiles.length) {
+  if (profile && profile.pinnedFiles && profile.pinnedFiles.length) {
     await Promise.all(
-      pinnedFiles.map(
+      profile.pinnedFiles.map(
         async (fileHash: string): Promise<void> => {
           let image = null;
 

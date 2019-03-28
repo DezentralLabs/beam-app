@@ -9,7 +9,6 @@ import {
   convertBufferToUtf8
 } from "./utils";
 import { aesCbcDecrypt, aesCbcEncrypt } from "./crypto";
-// import { Alert } from "react-native";
 
 const standardPath = "m/44'/60'/0'/0";
 
@@ -62,19 +61,25 @@ export async function createWallet() {
 
 export async function loadWallet() {
   const mnemonic = await loadMnemonic();
-  // Alert.alert("[loadWallet] mnemonic", mnemonic);
   console.log("[loadWallet] mnemonic", mnemonic);
   if (mnemonic) {
     const path = generatePath();
     const account = ethers.Wallet.fromMnemonic(mnemonic, path);
-    // Alert.alert("[loadWallet] account", JSON.stringify(account));
     console.log("[loadWallet] account", account);
     activeAccount = account;
-    // Alert.alert("[loadWallet] activeAccount", JSON.stringify(activeAccount));
     console.log("[loadWallet] activeAccount", activeAccount);
     return account;
   }
   return null;
+}
+
+export async function recoverWallet(mnemonic: string) {
+  const path = generatePath();
+  const account = ethers.Wallet.fromMnemonic(mnemonic, path);
+  console.log("[recoverWallet] account", account);
+  activeAccount = account;
+  console.log("[recoverWallet] activeAccount", activeAccount);
+  return account;
 }
 
 export function getMnemonic() {
@@ -161,12 +166,10 @@ export async function saveMnemonic(mnemonic: string) {
 }
 
 export async function loadMnemonic() {
-  // Alert.alert("[loadMnemonic] keychainLoad", "START");
   // console.log("[loadMnemonic] keychainLoad", "START");
 
   const mnemonic = await keychainLoad(mnemonicKey);
 
-  // Alert.alert("[loadMnemonic] keychainLoad", "END");
   // console.log("[loadMnemonic] keychainLoad", "END");
 
   return mnemonic;

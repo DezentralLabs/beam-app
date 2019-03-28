@@ -40,8 +40,11 @@ class App extends React.Component<any, any> {
     this.initApp();
   }
   initApp = async () => {
-    // await this.resetApp();
-    this.props.accountInit();
+    this.resetApp();
+    console.log("[initApp] this.props.account", this.props.account);
+    if (!this.props.account.address) {
+      this.props.accountInit();
+    }
   };
   resetApp = async () => {
     await deleteMnemonic();

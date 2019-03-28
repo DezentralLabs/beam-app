@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { connect } from "react-redux";
-import { accountRecovery, accountUpdateSeedPhrase } from "../../redux/_account";
+import { accountRecover, accountUpdateSeedPhrase } from "../../redux/_account";
 import TextButton from "../../components/TextButton";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
@@ -15,7 +15,7 @@ class RecoverAccountScreen extends React.Component<any, any> {
   updateSeedPhrase = (input: string) =>
     this.props.accountUpdateSeedPhrase(input);
 
-  onSubmit = () => this.props.accountRecovery();
+  onSubmit = () => this.props.accountRecover();
 
   render() {
     return (
@@ -79,5 +79,5 @@ const reduxProps = (reduxState: any) => ({
 
 export default connect(
   reduxProps,
-  { accountRecovery, accountUpdateSeedPhrase }
+  { accountRecover, accountUpdateSeedPhrase }
 )(RecoverAccountScreen);

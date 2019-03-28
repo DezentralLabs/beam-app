@@ -13,10 +13,9 @@ import {
   getPinnedFiles,
   updatePinnedFiles
 } from "../helpers/profile";
-import { loadWallet } from "../helpers/wallet";
+import { loadWallet, recoverWallet } from "../helpers/wallet";
 import { IFileJson } from "../helpers/types";
 import { navigate, goBack } from "../navigation";
-// import { Alert } from "react-native";
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -32,9 +31,9 @@ const ACCOUNT_CREATE_FAILURE = "account/ACCOUNT_CREATE_FAILURE";
 
 const ACCOUNT_UPDATE_SEEDPHRASE = "account/ACCOUNT_UPDATE_SEEDPHRASE";
 
-const ACCOUNT_RECOVERY_REQUEST = "account/ACCOUNT_RECOVERY_REQUEST";
-const ACCOUNT_RECOVERY_SUCCESS = "account/ACCOUNT_RECOVERY_SUCCESS";
-const ACCOUNT_RECOVERY_FAILURE = "account/ACCOUNT_RECOVERY_FAILURE";
+const ACCOUNT_RECOVER_REQUEST = "account/ACCOUNT_RECOVER_REQUEST";
+const ACCOUNT_RECOVER_SUCCESS = "account/ACCOUNT_RECOVER_SUCCESS";
+const ACCOUNT_RECOVER_FAILURE = "account/ACCOUNT_RECOVER_FAILURE";
 
 const ACCOUNT_ADD_IMAGE_REQUEST = "account/ACCOUNT_ADD_IMAGE_REQUEST";
 const ACCOUNT_ADD_IMAGE_SUCCESS = "account/ACCOUNT_ADD_IMAGE_SUCCESS";
@@ -58,38 +57,78 @@ const ACCOUNT_LOAD_PINNED_FAILURE = "account/ACCOUNT_LOAD_PINNED_FAILURE";
 
 // -- Actions --------------------------------------------------------------- //
 
-export const accountInit = () => async (dispatch: any) => {
+export const accountOnboarding = () => async (dispatch: any, getState: any) => {
+  dispatch({
+    type: ACCOUNT_INIT_SUCCESS,
+    payload: {
+      account: { address: "" },
+      username: ""
+    }
+  });
+  navigate("Onboarding");
+  console.log("getState()", getState());
+};
+
+export const accountInit = () => async (dispatch: any, getState: any) => {
   dispatch({ type: ACCOUNT_INIT_REQUEST });
   try {
     const account = await loadWallet();
-    // Alert.alert("[accountInit] account", JSON.stringify(account));
-    // console.log("[accountInit] account", account);
+
     if (account) {
       const profile = await getProfile(account.address);
-      const username = profile.username;
-      // Alert.alert("[accountInit] profile", JSON.stringify(profile));
-      // console.log("[accountInit] profile", profile);
+      if (profile) {
+        const username = profile.username;
+        console.log("profile.username", profile.username);
 
-      dispatch({
-        type: ACCOUNT_INIT_SUCCESS,
-        payload: {
-          account,
-          username
-        }
-      });
-      dispatch(accountLoadPinnedFiles());
+        dispatch({
+          type: ACCOUNT_INIT_SUCCESS,
+          payload: {
+            account,
+            username
+          }
+        });
+        dispatch(accountLoadPinnedFiles());
+      } else {
+        dispatch(accountOnboarding());
+      }
     } else {
-      dispatch({
-        type: ACCOUNT_INIT_SUCCESS,
-        payload: {
-          account: { address: "" },
-          username: ""
-        }
-      });
-      navigate("Onboarding");
+      dispatch(accountOnboarding());
     }
   } catch (error) {
     dispatch({ type: ACCOUNT_INIT_FAILURE });
+  }
+};
+
+export const accountRecover = () => async (dispatch: any, getState: any) => {
+  const { recoverSeedPhrase } = getState().account;
+  dispatch({ type: ACCOUNT_RECOVER_REQUEST });
+  try {
+    const account = await recoverWallet(recoverSeedPhrase);
+
+    if (account) {
+      const profile = await getProfile(account.address);
+      if (profile) {
+        const username = profile.username;
+        console.log("profile.username", profile.username);
+
+        dispatch({
+          type: ACCOUNT_RECOVER_SUCCESS,
+          payload: {
+            account,
+            username
+          }
+        });
+
+        dispatch(accountLoadPinnedFiles());
+      } else {
+        dispatch(accountOnboarding());
+      }
+    } else {
+      console.error("Failed to recover account");
+      dispatch({ type: ACCOUNT_RECOVER_FAILURE });
+    }
+  } catch (error) {
+    dispatch({ type: ACCOUNT_RECOVER_FAILURE });
   }
 };
 
@@ -99,21 +138,17 @@ export const accountLoadPinnedFiles = () => async (
 ) => {
   const { account } = getState().account;
 
-  // Alert.alert("[accountLoadPinnedFiles] account", JSON.stringify(account));
-  // console.log("[accountLoadPinnedFiles] account", account);
-
   dispatch({ type: ACCOUNT_LOAD_PINNED_REQUEST });
 
   try {
     const images = await getPinnedFiles(account.address);
 
-    // Alert.alert("[accountLoadPinnedFiles] images", JSON.stringify(images));
-    // console.log("[accountLoadPinnedFiles] images", images);
-
     dispatch({
       type: ACCOUNT_LOAD_PINNED_SUCCESS,
       payload: images
     });
+    navigate("AccountStack");
+    console.log("getState()", getState());
   } catch (error) {
     console.error(error);
     dispatch({ type: ACCOUNT_LOAD_PINNED_FAILURE });
@@ -140,6 +175,7 @@ export const accountCreateNew = () => async (dispatch: any, getState: any) => {
 
     dispatch({ type: ACCOUNT_CREATE_SUCCESS, payload: account });
     navigate("AccountProfile");
+    console.log("getState()", getState());
   } catch (error) {
     dispatch({ type: ACCOUNT_CREATE_FAILURE });
   }
@@ -149,16 +185,6 @@ export const accountUpdateSeedPhrase = (seedPhrase: string) => async (
   dispatch: any
 ) => {
   dispatch({ type: ACCOUNT_UPDATE_SEEDPHRASE, payload: seedPhrase });
-};
-
-export const accountRecovery = () => (dispatch: any) => {
-  dispatch({ type: ACCOUNT_IMPORT_REQUEST });
-  try {
-    dispatch({ type: ACCOUNT_IMPORT_SUCCESS });
-    navigate("AccountProfile");
-  } catch (error) {
-    dispatch({ type: ACCOUNT_IMPORT_FAILURE });
-  }
 };
 
 export const accountAddImage = () => async (dispatch: any, getState: any) => {
@@ -202,7 +228,7 @@ export const accountAddImage = () => async (dispatch: any, getState: any) => {
   }
 };
 
-export const accountImport = () => async (dispatch: any) => {
+export const accountImport = () => async (dispatch: any, getState: any) => {
   dispatch({ type: ACCOUNT_IMPORT_REQUEST });
   try {
     const file = await selectFile();
@@ -211,6 +237,7 @@ export const accountImport = () => async (dispatch: any) => {
     if (imported && imported.length) {
       dispatch({ type: ACCOUNT_IMPORT_SUCCESS, payload: imported });
       navigate("Import");
+      console.log("getState()", getState());
     } else {
       console.error("Failed to import images");
       dispatch({ type: ACCOUNT_IMPORT_FAILURE });
@@ -346,18 +373,21 @@ export default (state = INITIAL_STATE, action: any) => {
         ...state,
         recoverSeedPhrase: action.payload
       };
-    case ACCOUNT_RECOVERY_REQUEST:
+    case ACCOUNT_RECOVER_REQUEST:
       return {
         ...state,
         loading: true
       };
-    case ACCOUNT_RECOVERY_SUCCESS:
+    case ACCOUNT_RECOVER_SUCCESS:
       return {
         ...state,
         loading: false,
-        images: action.payload
+        username: action.payload.username,
+        account: action.payload.account,
+        address: action.payload.account.address,
+        recoverSeedPhrase: ""
       };
-    case ACCOUNT_RECOVERY_FAILURE:
+    case ACCOUNT_RECOVER_FAILURE:
       return {
         ...state,
         loading: false
