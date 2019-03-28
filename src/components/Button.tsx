@@ -41,6 +41,7 @@ interface IButtonProps {
 
 const Button = (props: IButtonProps) => {
   const { loading, color, children, width } = props;
+  console.log("[Button] width", width);
   return (
     <TouchableOpacity
       style={[

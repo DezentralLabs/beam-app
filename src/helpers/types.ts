@@ -26,3 +26,10 @@ export interface IProfile {
   username: string;
   pinnedFiles: string[];
 }
+
+export interface IDocumentPickerResult {
+  fileName: string;
+  fileSize: number;
+  type: string;
+  uri: string;
+}

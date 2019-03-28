@@ -1,10 +1,24 @@
 import * as React from "react";
-import { Text, View, Image, StyleSheet } from "react-native";
+import { TouchableOpacity, Text, View, Image, StyleSheet } from "react-native";
+// import * as ImagePicker from "react-native-full-image-picker";
 import Card from "./Card";
 import Section from "./Section";
 // import { STATUSBAR_HEIGHT } from "../helpers/constants";
 
 class AccountHeader extends React.Component<any, any> {
+  openImagePicker = async () => {
+    // ImagePicker.getAlbum({
+    //   maxSize: 1,
+    //   callback: (err: any, res: any) => {
+    //     if (err) {
+    //       console.error(err);
+    //       return;
+    //     }
+    //     console.log("[openImagePicker] res", res);
+    //   }
+    // });
+    console.log("openImagePicker");
+  };
   render = () => {
     const { address, username } = this.props;
     return (
@@ -14,15 +28,17 @@ class AccountHeader extends React.Component<any, any> {
             {username && (
               <View style={styles.innerRow}>
                 <Section style={styles.innerSectionOne}>
-                  <Image
-                    style={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: 25,
-                      alignSelf: "flex-end"
-                    }}
-                    source={require("../assets/profile.jpeg")}
-                  />
+                  <TouchableOpacity onPress={this.openImagePicker}>
+                    <Image
+                      style={{
+                        width: 50,
+                        height: 50,
+                        borderRadius: 25,
+                        alignSelf: "flex-end"
+                      }}
+                      source={require("../assets/profile.jpeg")}
+                    />
+                  </TouchableOpacity>
                 </Section>
                 <Section style={styles.innerSectionTwo}>
                   <Text style={styles.username}>{`@${username}`}</Text>

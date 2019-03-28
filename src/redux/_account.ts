@@ -1,11 +1,17 @@
+import { CameraRoll } from "react-native";
 import { createWallet } from "../helpers/wallet";
-import { selectFile, unzipFile, scanDirectory } from "../helpers/utils";
+import {
+  selectFile,
+  unzipFile,
+  scanDirectory
+  // selectImage
+} from "../helpers/utils";
 import {
   getProfile,
   saveProfile,
   savePinnedFile,
   getPinnedFiles,
-  updateProfile
+  updatePinnedFiles
 } from "../helpers/profile";
 import { loadWallet } from "../helpers/wallet";
 import { IFileJson } from "../helpers/types";
@@ -30,6 +36,10 @@ const ACCOUNT_RECOVERY_REQUEST = "account/ACCOUNT_RECOVERY_REQUEST";
 const ACCOUNT_RECOVERY_SUCCESS = "account/ACCOUNT_RECOVERY_SUCCESS";
 const ACCOUNT_RECOVERY_FAILURE = "account/ACCOUNT_RECOVERY_FAILURE";
 
+const ACCOUNT_ADD_IMAGE_REQUEST = "account/ACCOUNT_ADD_IMAGE_REQUEST";
+const ACCOUNT_ADD_IMAGE_SUCCESS = "account/ACCOUNT_ADD_IMAGE_SUCCESS";
+const ACCOUNT_ADD_IMAGE_FAILURE = "account/ACCOUNT_ADD_IMAGE_FAILURE";
+
 const ACCOUNT_IMPORT_REQUEST = "account/ACCOUNT_IMPORT_REQUEST";
 const ACCOUNT_IMPORT_SUCCESS = "account/ACCOUNT_IMPORT_SUCCESS";
 const ACCOUNT_IMPORT_FAILURE = "account/ACCOUNT_IMPORT_FAILURE";
@@ -40,14 +50,11 @@ const ACCOUNT_UPLOAD_REQUEST = "account/ACCOUNT_UPLOAD_REQUEST";
 const ACCOUNT_UPLOAD_SUCCESS = "account/ACCOUNT_UPLOAD_SUCCESS";
 const ACCOUNT_UPLOAD_FAILURE = "account/ACCOUNT_UPLOAD_FAILURE";
 
+const ACCOUNT_UPLOAD_IMAGE = "account/ACCOUNT_UPLOAD_IMAGE";
+
 const ACCOUNT_LOAD_PINNED_REQUEST = "account/ACCOUNT_LOAD_PINNED_REQUEST";
 const ACCOUNT_LOAD_PINNED_SUCCESS = "account/ACCOUNT_LOAD_PINNED_SUCCESS";
 const ACCOUNT_LOAD_PINNED_FAILURE = "account/ACCOUNT_LOAD_PINNED_FAILURE";
-
-const ACCOUNT_ADD_IMAGE = "account/ACCOUNT_ADD_IMAGE";
-
-const ACCOUNT_DISPLAY_IMAGE = "account/ACCOUNT_DISPLAY_IMAGE";
-const ACCOUNT_HIDE_IMAGE = "account/ACCOUNT_HIDE_IMAGE";
 
 // -- Actions --------------------------------------------------------------- //
 
@@ -154,24 +161,56 @@ export const accountRecovery = () => (dispatch: any) => {
   }
 };
 
+export const accountAddImage = () => async (dispatch: any, getState: any) => {
+  // const { account } = getState().account;
+  dispatch({ type: ACCOUNT_ADD_IMAGE_REQUEST });
+  try {
+    const result = await CameraRoll.getPhotos({ first: 1 });
+    console.log("[accountAddImage] result", result);
+
+    // const file = await selectImage();
+    // console.log("[accountAddImage] file", file);
+
+    // const fileJson = {
+    //   name: file.fileName,
+    //   mime: file.type,
+    //   file: file.uri,
+    //   meta: {
+    //     added: Date.now(),
+    //     modified: Date.now(),
+    //     keywords: []
+    //   }
+    // };
+
+    const fileJson = {
+      name: "",
+      mime: "",
+      file: "",
+      meta: {
+        added: "",
+        modified: "",
+        keywords: []
+      }
+    };
+
+    // const fileHash = await savePinnedFile(fileJson);
+    // updatePinnedFiles(account.address, [fileHash]);
+    dispatch({ type: ACCOUNT_ADD_IMAGE_SUCCESS, payload: fileJson });
+  } catch (error) {
+    console.error(error);
+    dispatch({ type: ACCOUNT_ADD_IMAGE_FAILURE });
+  }
+};
+
 export const accountImport = () => async (dispatch: any) => {
   dispatch({ type: ACCOUNT_IMPORT_REQUEST });
   try {
     const file = await selectFile();
-    console.log("[accountImport] file", file);
     const resultPath = await unzipFile(file.uri);
-    console.log("[accountImport] resultPath", resultPath);
     const imported = await scanDirectory(resultPath);
-    console.log("[accountImport] imported", imported);
     if (imported && imported.length) {
-      console.log("imported", imported);
-      console.log(
-        "imported && imported.length",
-        `${imported && imported.length}`
-      );
       dispatch({ type: ACCOUNT_IMPORT_SUCCESS, payload: imported });
       navigate("Import");
-      console.log('navigate("Import")');
     } else {
       console.error("Failed to import images");
       dispatch({ type: ACCOUNT_IMPORT_FAILURE });
@@ -186,16 +225,11 @@ export const accountUpdateSelected = (file: IFileJson) => async (
   dispatch: any,
   getState: any
 ) => {
-  console.log("[accountUpdateSelected] file", file);
   let selected: IFileJson[] = [];
   let isNewFile = true;
   const prevSelected = getState().account.selected;
 
-  console.log("[accountUpdateSelected] prevSelected", prevSelected);
-
   prevSelected.forEach((prevFile: IFileJson) => {
-    console.log("[accountUpdateSelected] prevFile.name", prevFile.name);
-    console.log("[accountUpdateSelected] file.name", file.name);
     if (prevFile.name !== file.name) {
       selected.push(prevFile);
     } else {
@@ -203,13 +237,9 @@ export const accountUpdateSelected = (file: IFileJson) => async (
     }
   });
 
-  console.log("[accountUpdateSelected] isNewFile", isNewFile);
-
   if (isNewFile) {
     selected.push(file);
   }
-
-  console.log("[accountUpdateSelected] selected", selected);
 
   dispatch({ type: ACCOUNT_UPDATE_SELECTED, payload: selected });
 };
@@ -222,49 +252,16 @@ export const accountUpload = () => async (dispatch: any, getState: any) => {
     const newPinnedFiles = await Promise.all(
       selected.map(async (fileJson: IFileJson) => {
         const fileHash = await savePinnedFile(fileJson);
-        dispatch({ type: ACCOUNT_ADD_IMAGE, payload: fileJson });
+        dispatch({ type: ACCOUNT_UPLOAD_IMAGE, payload: fileJson });
         return fileHash;
       })
     );
-    const profile = await getProfile(account.address);
-    console.log("[accountUpload] newPinnedFiles", newPinnedFiles);
-    const updatedPinnedFiles = profile.pinnedFiles
-      ? [...profile.pinnedFiles, ...newPinnedFiles]
-      : newPinnedFiles;
-    console.log("[accountUpload] updatedPinnedFiles", updatedPinnedFiles);
-    updateProfile(account.address, { pinnedFiles: updatedPinnedFiles });
+    updatePinnedFiles(account.address, newPinnedFiles);
     dispatch({ type: ACCOUNT_UPLOAD_SUCCESS });
   } catch (error) {
     console.error(error);
     dispatch({ type: ACCOUNT_UPLOAD_FAILURE });
   }
-};
-
-// export const accountAddImage = (fileJson: IFileJson) => async (
-//   dispatch: any,
-//   getState: any
-// ) => {
-//   // const { images } = getState().account;
-
-//   const fileHash = await savePinnedFile(fileJson);
-
-//   // const updatedImages = [...images, fileJson];
-
-//   dispatch({ type: ACCOUNT_ADD_IMAGE, payload: fileJson });
-
-//   return fileHash;
-// };
-
-export const accountDisplayImage = (fileJson: IFileJson) => async (
-  dispatch: any
-) => {
-  dispatch({ type: ACCOUNT_DISPLAY_IMAGE, payload: fileJson });
-  navigate("Display");
-};
-
-export const accountHideImage = () => async (dispatch: any) => {
-  goBack();
-  dispatch({ type: ACCOUNT_HIDE_IMAGE });
 };
 
 // -- Reducer --------------------------------------------------------------- //
@@ -279,8 +276,7 @@ const INITIAL_STATE = {
   imported: [],
   uploaded: [],
   images: [],
-  account: {},
-  display: null
+  account: {}
 };
 
 export default (state = INITIAL_STATE, action: any) => {
@@ -413,21 +409,11 @@ export default (state = INITIAL_STATE, action: any) => {
         selected: [],
         uploaded: []
       };
-    case ACCOUNT_ADD_IMAGE:
+    case ACCOUNT_UPLOAD_IMAGE:
       return {
         ...state,
         images: [...state.images, action.payload],
         uploaded: [...state.uploaded, action.payload]
-      };
-    case ACCOUNT_DISPLAY_IMAGE:
-      return {
-        ...state,
-        display: action.payload
-      };
-    case ACCOUNT_HIDE_IMAGE:
-      return {
-        ...state,
-        display: null
       };
     default:
       return state;

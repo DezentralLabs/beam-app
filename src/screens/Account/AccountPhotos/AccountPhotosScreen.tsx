@@ -5,25 +5,20 @@ import {
   Text,
   View,
   Image,
-  ActivityIndicator,
-  TouchableOpacity
+  ActivityIndicator
+  // TouchableOpacity
 } from "react-native";
 import { connect } from "react-redux";
 import Lightbox from "react-native-lightbox";
-import { accountImport, accountDisplayImage } from "../../../redux/_account";
+import { accountImport, accountAddImage } from "../../../redux/_account";
 import AccountHeader from "../../../components/AccountHeader";
 import Button from "../../../components/Button";
 import { WINDOW_WIDTH } from "../../../helpers/constants";
-import { IFileJson } from "../../../helpers/types";
 
 class AccountPhotosScreen extends React.Component<any, any> {
   static navigationOptions = {
     title: "Photos",
     headerTitle: "Photos"
-  };
-
-  onDisplayImage = (fileJson: IFileJson) => {
-    this.props.accountDisplayImage(fileJson);
   };
 
   render() {
@@ -49,9 +44,14 @@ class AccountPhotosScreen extends React.Component<any, any> {
         >
           {!images.length ? (
             !loading ? (
-              <Button width={200} onPress={this.props.accountImport}>
-                {`Import ZIP`}
-              </Button>
+              <View style={{ width: WINDOW_WIDTH, flexDirection: "row" }}>
+                <Button width={150} onPress={this.props.accountImport}>
+                  {`Import ZIP`}
+                </Button>
+                {/* <Button width={150} onPress={this.props.accountAddImage}>
+                  {`Add Photos`}
+                </Button> */}
+              </View>
             ) : (
               <ActivityIndicator size="small" color="#a5a5a5" />
             )
@@ -109,9 +109,14 @@ class AccountPhotosScreen extends React.Component<any, any> {
             }}
           >
             {!uploading ? (
-              <Button width={200} onPress={this.props.accountImport}>
-                {`Import ZIP`}
-              </Button>
+              <View style={{ width: WINDOW_WIDTH, flexDirection: "row" }}>
+                <Button width={150} onPress={this.props.accountImport}>
+                  {`Import ZIP`}
+                </Button>
+                {/* <Button width={150} onPress={this.props.accountAddImage}>
+                  {`Add Photos`}
+                </Button> */}
+              </View>
             ) : (
               <Text style={{ fontWeight: "600", textAlign: "center" }}>
                 {`Uploading ${uploadingLeft} out of ${uploadingTotal}`}
@@ -160,5 +165,5 @@ const reduxProps = (reduxState: any) => ({
 
 export default connect(
   reduxProps,
-  { accountImport, accountDisplayImage }
+  { accountImport, accountAddImage }
 )(AccountPhotosScreen);

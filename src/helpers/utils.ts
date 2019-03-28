@@ -1,8 +1,12 @@
-import { DocumentPicker } from "react-native-document-picker";
+import {
+  DocumentPicker,
+  DocumentPickerUtil
+} from "react-native-document-picker";
 import flattenDeep from "lodash.flattendeep";
+import ImagePicker from "react-native-image-picker";
 import RNFileSystem from "react-native-fs";
 import { unzip } from "react-native-zip-archive";
-import { IFileJson } from "./types";
+import { IFileJson, IDocumentPickerResult } from "./types";
 import { mimeTypes } from "./constants";
 
 export function formatFilePath(
@@ -48,11 +52,36 @@ export function isImage(filePath: string) {
   return /\.(jpe?g|png|gif|bmp)$/i.test(filePath);
 }
 
-export function selectFile(): Promise<{
-  fileName: string;
-  fileSize: number;
-  uri: string;
-}> {
+export function selectImage(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    ImagePicker.launchImageLibrary(
+      {
+        title: "Select Photos"
+      },
+      response => {
+        if (response.didCancel) {
+          const errorMsg = `User cancelled image picker`;
+          console.error(errorMsg);
+          reject(errorMsg);
+        } else if (response.error) {
+          const errorMsg = `ImagePicker Error: ${response.error}`;
+          console.error(errorMsg);
+          reject(errorMsg);
+        } else if (response.customButton) {
+          const errorMsg = `User tapped custom button: ${
+            response.customButton
+          }`;
+          console.error(errorMsg);
+          reject(errorMsg);
+        }
+        console.log("[selectImage] response", response);
+        resolve(response);
+      }
+    );
+  });
+}
+
+export function selectFile(): Promise<IDocumentPickerResult> {
   return new Promise((resolve, reject) => {
     DocumentPicker.show(
       {
@@ -60,10 +89,8 @@ export function selectFile(): Promise<{
       },
       (error: Error, result: any) => {
         if (error) {
-          console.log("[selectFile] error", error);
           reject(error);
         }
-        console.log("[selectFile] result", result);
         resolve(result);
       }
     );

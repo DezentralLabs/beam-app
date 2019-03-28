@@ -15,34 +15,19 @@ const profileKey = (address: string) => {
 };
 
 export async function saveProfile(address: string, profile: any) {
-  console.log("[saveProfile] address", address);
-  console.log("[saveProfile] profile", profile);
   const key = profileKey(address);
   await apiSetProfile(address, profile);
-  console.log("Successfully => apiSetProfile");
   await asyncStorageSave(key, profile);
-  console.log("Successfully => asyncStorageSave");
 }
 
 export async function getProfile(address: string): Promise<IProfile> {
   const key = profileKey(address);
 
-  // Alert.alert("[getProfile] address", JSON.stringify(address));
-  // console.log("[getProfile] address", address);
-
   let profile = await asyncStorageLoad(key);
 
-  // Alert.alert("[getProfile] profile", JSON.stringify(profile));
-  // console.log("[getProfile] profile", profile);
-
-  // console.log("[getProfile] asyncStorageLoad profile", profile);
   if (!profile) {
     const result = await apiGetProfile(address);
 
-    // Alert.alert("[getProfile] result", JSON.stringify(result));
-    // console.log("[getProfile] result", result);
-
-    // console.log("[getProfile] apiGetProfile profile", response.data);
     if (result) {
       profile = result;
     }
@@ -58,11 +43,21 @@ export async function updateProfile(address: string, updatedProfile: any) {
   await saveProfile(address, newProfile);
 }
 
+export async function updatePinnedFiles(
+  address: string,
+  newPinnedFiles: any[]
+) {
+  const profile = await getProfile(address);
+  console.log("[updatePinnedFiles] newPinnedFiles", newPinnedFiles);
+  const updatedPinnedFiles = profile.pinnedFiles
+    ? [...profile.pinnedFiles, ...newPinnedFiles]
+    : newPinnedFiles;
+  console.log("[updatePinnedFiles] updatedPinnedFiles", updatedPinnedFiles);
+  updateProfile(address, { pinnedFiles: updatedPinnedFiles });
+}
+
 export async function getPinnedFiles(address: string) {
   const { pinnedFiles } = await getProfile(address);
-
-  // Alert.alert("[getPinnedFiles] pinnedFiles", JSON.stringify(pinnedFiles));
-  // console.log("[getPinnedFiles] pinnedFiles", pinnedFiles);
 
   let images: IFileJson[] = [];
   if (pinnedFiles && pinnedFiles.length) {
@@ -73,43 +68,19 @@ export async function getPinnedFiles(address: string) {
 
           const filePath = formatFilePath(fileHash);
 
-          // Alert.alert("[getPinnedFiles] filePath", JSON.stringify(filePath));
-          // console.log("[getPinnedFiles] filePath", filePath);
-
           try {
-            // Alert.alert("[getPinnedFiles] readFile", "START");
-            // console.log("[getPinnedFiles] readFile", 'START');
-
             const result = await readFile(filePath);
-
-            // Alert.alert("[getPinnedFiles] readFile", "END");
-            // console.log("[getPinnedFiles] readFile", 'END');
 
             if (result) {
               image = JSON.parse(result);
             } else {
-              // Alert.alert("[getPinnedFiles] apiFetchFile", "START");
-              // console.log("[getPinnedFiles] apiFetchFile", 'START');
-
               image = await apiFetchFile(fileHash);
-
-              // Alert.alert("[getPinnedFiles] apiFetchFile", "END");
-              // console.log("[getPinnedFiles] apiFetchFile", 'END');
             }
           } catch (error) {
-            // Alert.alert("[getPinnedFiles] apiFetchFile", "START");
-            // console.log("[getPinnedFiles] apiFetchFile", 'START');
-
             image = await apiFetchFile(fileHash);
-
-            // Alert.alert("[getPinnedFiles] apiFetchFile", "END");
-            // console.log("[getPinnedFiles] apiFetchFile", 'END');
           }
 
           if (image) {
-            // Alert.alert("[getPinnedFiles] image", JSON.stringify(image));
-            // console.log("[getPinnedFiles] image", image);
-
             images.push(image);
           }
         }
