@@ -6,7 +6,6 @@ import { setTopLevelNavigator } from "./navigation";
 import OnboardingStack from "./screens/Onboarding";
 import AccountStack from "./screens/Account";
 import ModalImportStack from "./screens/ModalImport";
-import ModalDisplayStack from "./screens/ModalDisplay";
 import { deleteMnemonic } from "./helpers/wallet";
 import { deleteProfile } from "./helpers/profile";
 
@@ -25,8 +24,7 @@ const MainStack = createStackNavigator(
 const AppNavigator = createStackNavigator(
   {
     Main: MainStack,
-    ModalImport: ModalImportStack,
-    ModalDisplay: ModalDisplayStack
+    ModalImport: ModalImportStack
   },
   {
     initialRouteName: "Main",

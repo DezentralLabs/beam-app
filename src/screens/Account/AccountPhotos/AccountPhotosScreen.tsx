@@ -9,6 +9,7 @@ import {
   TouchableOpacity
 } from "react-native";
 import { connect } from "react-redux";
+import Lightbox from "react-native-lightbox";
 import { accountImport, accountDisplayImage } from "../../../redux/_account";
 import AccountHeader from "../../../components/AccountHeader";
 import Button from "../../../components/Button";
@@ -27,6 +28,7 @@ class AccountPhotosScreen extends React.Component<any, any> {
 
   render() {
     const {
+      navigator,
       initiating,
       uploading,
       loading,
@@ -63,22 +65,34 @@ class AccountPhotosScreen extends React.Component<any, any> {
               }}
               data={images}
               keyExtractor={(image: any) => image.name}
-              renderItem={(item: any) => (
-                <TouchableOpacity
-                  onPress={() => this.onDisplayImage(item.item)}
-                >
+              renderItem={(item: any) => {
+                const renderContent = () => (
                   <Image
                     style={{
-                      padding: 10,
+                      padding: 0,
                       flex: 1,
-                      height: WINDOW_WIDTH / 3,
-                      width: WINDOW_WIDTH / 3
+                      height: "auto",
+                      width: "auto"
                     }}
-                    resizeMode={"cover"}
+                    resizeMode={"contain"}
                     source={{ uri: item.item.file }}
                   />
-                </TouchableOpacity>
-              )}
+                );
+                return (
+                  <Lightbox navigator={navigator} renderContent={renderContent}>
+                    <Image
+                      style={{
+                        padding: 10,
+                        flex: 1,
+                        height: WINDOW_WIDTH / 3,
+                        width: WINDOW_WIDTH / 3
+                      }}
+                      resizeMode={"cover"}
+                      source={{ uri: item.item.file }}
+                    />
+                  </Lightbox>
+                );
+              }}
             />
           )}
         </View>
