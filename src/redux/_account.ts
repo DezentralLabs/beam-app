@@ -284,10 +284,10 @@ const INITIAL_STATE = {
 };
 
 export default (state = INITIAL_STATE, action: any) => {
-  console.log("=============================================");
+  console.log("\n------------------------------------------------");
   console.log("==========>", action.type);
   console.log("==========>", action.payload);
-  console.log("=============================================");
+  console.log("------------------------------------------------\n");
   switch (action.type) {
     case ACCOUNT_INIT_REQUEST:
       return {

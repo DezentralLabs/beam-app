@@ -8,7 +8,8 @@ const ModalDisplayStack = createStackNavigator(
   },
   {
     initialRouteName: "Display",
-    mode: "modal"
+    mode: "modal",
+    headerMode: "none"
   }
 );
 
