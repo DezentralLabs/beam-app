@@ -2,16 +2,16 @@ import * as React from "react";
 import { Image } from "react-native";
 import { createBottomTabNavigator } from "react-navigation";
 
-import AccountProfileStack from "./AccountProfile";
+import AccountPhotosStack from "./AccountPhotos";
 import AccountSettingsStack from "./AccountSettings";
 
 const AccountStack = createBottomTabNavigator(
   {
-    Profile: AccountProfileStack,
+    Photos: AccountPhotosStack,
     Settings: AccountSettingsStack
   },
   {
-    initialRouteName: "Profile",
+    initialRouteName: "Photos",
     defaultNavigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused }) => {
         const { routeName } = navigation.state;
@@ -19,10 +19,10 @@ const AccountStack = createBottomTabNavigator(
         let iconSource = null;
 
         switch (routeName) {
-          case "Profile":
+          case "Photos":
             iconSource = focused
-              ? require("../../assets/picture-blue.png")
-              : require("../../assets/picture-gray.png");
+              ? require("../../assets/photo-blue.png")
+              : require("../../assets/photo-gray.png");
             break;
           case "Settings":
             iconSource = focused
