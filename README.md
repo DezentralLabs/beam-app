@@ -1,4 +1,4 @@
-# beam-app
+# beam-app
 
 Social media vault
 
