@@ -7,16 +7,6 @@ import Section from "./Section";
 
 class AccountHeader extends React.Component<any, any> {
   openImagePicker = async () => {
-    // ImagePicker.getAlbum({
-    //   maxSize: 1,
-    //   callback: (err: any, res: any) => {
-    //     if (err) {
-    //       console.error(err);
-    //       return;
-    //     }
-    //     console.log("[openImagePicker] res", res);
-    //   }
-    // });
     console.log("openImagePicker");
   };
   render = () => {

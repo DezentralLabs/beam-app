@@ -1,5 +1,4 @@
 import { CameraRoll } from "react-native";
-import { createWallet } from "../helpers/wallet";
 import {
   selectFile,
   unzipFile,
@@ -13,7 +12,7 @@ import {
   getPinnedFiles,
   updatePinnedFiles
 } from "../helpers/profile";
-import { loadWallet, recoverWallet } from "../helpers/wallet";
+import { createWallet, loadWallet, recoverWallet } from "../helpers/wallet";
 import { IFileJson } from "../helpers/types";
 import { navigate, goBack } from "../navigation";
 
@@ -66,7 +65,6 @@ export const accountOnboarding = () => async (dispatch: any, getState: any) => {
     }
   });
   navigate("Onboarding");
-  console.log("getState()", getState());
 };
 
 export const accountInit = () => async (dispatch: any, getState: any) => {
@@ -78,7 +76,6 @@ export const accountInit = () => async (dispatch: any, getState: any) => {
       const profile = await getProfile(account.address);
       if (profile) {
         const username = profile.username;
-        console.log("profile.username", profile.username);
 
         dispatch({
           type: ACCOUNT_INIT_SUCCESS,
@@ -109,7 +106,6 @@ export const accountRecover = () => async (dispatch: any, getState: any) => {
       const profile = await getProfile(account.address);
       if (profile) {
         const username = profile.username;
-        console.log("profile.username", profile.username);
 
         dispatch({
           type: ACCOUNT_RECOVER_SUCCESS,
@@ -148,7 +144,6 @@ export const accountLoadPinnedFiles = () => async (
       payload: images
     });
     navigate("AccountStack");
-    console.log("getState()", getState());
   } catch (error) {
     console.error(error);
     dispatch({ type: ACCOUNT_LOAD_PINNED_FAILURE });
@@ -170,12 +165,9 @@ export const accountCreateNew = () => async (dispatch: any, getState: any) => {
       username: username,
       pinnedFiles: []
     });
-    console.log("[accountCreateNew] account.address", account.address);
-    console.log("[accountCreateNew] username", username);
 
     dispatch({ type: ACCOUNT_CREATE_SUCCESS, payload: account });
     navigate("AccountProfile");
-    console.log("getState()", getState());
   } catch (error) {
     dispatch({ type: ACCOUNT_CREATE_FAILURE });
   }
@@ -192,10 +184,8 @@ export const accountAddImage = () => async (dispatch: any, getState: any) => {
   dispatch({ type: ACCOUNT_ADD_IMAGE_REQUEST });
   try {
     const result = await CameraRoll.getPhotos({ first: 1 });
-    console.log("[accountAddImage] result", result);
 
     // const file = await selectImage();
-    // console.log("[accountAddImage] file", file);
 
     // const fileJson = {
     //   name: file.fileName,
@@ -237,7 +227,6 @@ export const accountImport = () => async (dispatch: any, getState: any) => {
     if (imported && imported.length) {
       dispatch({ type: ACCOUNT_IMPORT_SUCCESS, payload: imported });
       navigate("Import");
-      console.log("getState()", getState());
     } else {
       console.error("Failed to import images");
       dispatch({ type: ACCOUNT_IMPORT_FAILURE });
@@ -307,10 +296,6 @@ const INITIAL_STATE = {
 };
 
 export default (state = INITIAL_STATE, action: any) => {
-  console.log("\n------------------------------------------------");
-  console.log("==========>", action.type);
-  console.log("==========>", action.payload);
-  console.log("------------------------------------------------\n");
   switch (action.type) {
     case ACCOUNT_INIT_REQUEST:
       return {

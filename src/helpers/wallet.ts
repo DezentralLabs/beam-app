@@ -48,12 +48,9 @@ function generateAddresses(n: number = 10) {
 
 export async function createWallet() {
   const mnemonic = generateMnemonic();
-  console.log("[createWallet] mnemonic", mnemonic);
   const path = generatePath();
   const account = ethers.Wallet.fromMnemonic(mnemonic, path);
-  console.log("[createWallet] account", account);
   activeAccount = account;
-  console.log("[createWallet] activeAccount", activeAccount);
   await saveMnemonic(mnemonic);
 
   return account;
@@ -61,13 +58,10 @@ export async function createWallet() {
 
 export async function loadWallet() {
   const mnemonic = await loadMnemonic();
-  console.log("[loadWallet] mnemonic", mnemonic);
   if (mnemonic) {
     const path = generatePath();
     const account = ethers.Wallet.fromMnemonic(mnemonic, path);
-    console.log("[loadWallet] account", account);
     activeAccount = account;
-    console.log("[loadWallet] activeAccount", activeAccount);
     return account;
   }
   return null;
@@ -76,9 +70,7 @@ export async function loadWallet() {
 export async function recoverWallet(mnemonic: string) {
   const path = generatePath();
   const account = ethers.Wallet.fromMnemonic(mnemonic, path);
-  console.log("[recoverWallet] account", account);
   activeAccount = account;
-  console.log("[recoverWallet] activeAccount", activeAccount);
   return account;
 }
 
@@ -162,15 +154,10 @@ const mnemonicKey = "BEAM_ACCOUNT_MNEMONIC";
 
 export async function saveMnemonic(mnemonic: string) {
   await keychainSave(mnemonicKey, mnemonic);
-  console.log("[saveMnemonic] mnemonic", mnemonic);
 }
 
 export async function loadMnemonic() {
-  // console.log("[loadMnemonic] keychainLoad", "START");
-
   const mnemonic = await keychainLoad(mnemonicKey);
-
-  // console.log("[loadMnemonic] keychainLoad", "END");
 
   return mnemonic;
 }

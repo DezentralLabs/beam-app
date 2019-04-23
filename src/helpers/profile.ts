@@ -41,9 +41,7 @@ export async function getProfile(address: string): Promise<IProfile | null> {
 
 export async function updateProfile(address: string, updatedProfile: any) {
   const profile = await getProfile(address);
-  console.log("[updateProfile] profile", profile);
   const newProfile = { ...profile, ...updatedProfile };
-  console.log("[updateProfile] newProfile", newProfile);
   await saveProfile(address, newProfile);
 }
 
@@ -53,11 +51,9 @@ export async function updatePinnedFiles(
 ) {
   const profile = await getProfile(address);
   if (profile) {
-    console.log("[updatePinnedFiles] newPinnedFiles", newPinnedFiles);
     const updatedPinnedFiles = profile.pinnedFiles
       ? [...profile.pinnedFiles, ...newPinnedFiles]
       : newPinnedFiles;
-    console.log("[updatePinnedFiles] updatedPinnedFiles", updatedPinnedFiles);
     updateProfile(address, { pinnedFiles: updatedPinnedFiles });
   }
 }

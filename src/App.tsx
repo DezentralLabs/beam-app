@@ -40,15 +40,9 @@ class App extends React.Component<any, any> {
     this.initApp();
   }
   initApp = async () => {
-    this.resetApp();
-    console.log("[initApp] this.props.account", this.props.account);
     if (!this.props.account.address) {
       this.props.accountInit();
     }
-  };
-  resetApp = async () => {
-    await deleteMnemonic();
-    await deleteProfile(this.props.account.address);
   };
   render = () => (
     <AppContainer ref={navigatorRef => setTopLevelNavigator(navigatorRef)} />

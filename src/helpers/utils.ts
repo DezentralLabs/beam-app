@@ -74,7 +74,6 @@ export function selectImage(): Promise<any> {
           console.error(errorMsg);
           reject(errorMsg);
         }
-        console.log("[selectImage] response", response);
         resolve(response);
       }
     );
@@ -110,19 +109,16 @@ export async function unzipFile(filePath: string) {
 
 export async function getStats(filePath: string) {
   const result = await RNFileSystem.stat(filePath);
-  // console.log("[getStats] result", result);
   return result;
 }
 
 export async function readFile(filePath: string, encoding: string = "utf8") {
   const result = await RNFileSystem.readFile(filePath, encoding);
-  // console.log("[readFile] result", result);
   return result;
 }
 
 export async function writeFile(filePath: string, data: any, encoding: string) {
   const result = await RNFileSystem.writeFile(filePath, data, encoding);
-  // console.log("[writeFile] result", result);
   return result;
 }
 

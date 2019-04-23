@@ -5,9 +5,12 @@ import { IFileJson, IProfile } from "./types";
 export const apiPinFile = async (
   fileJson: IFileJson
 ): Promise<string | null> => {
+  /*
+   *  TODO: improve file encryption performance
+   */
+
   // const fileJsonString = JSON.stringify(fileJson);
   // const cipher = await encrypt(fileJsonString);
-
   // if (!cipher) {
   //   console.error("Failed to pin file");
   //   return null;
@@ -43,7 +46,6 @@ export const apiPinFile = async (
 export const apiFetchFile = async (
   fileHash: string
 ): Promise<IFileJson | null> => {
-  // console.log("[apiFetchFile] fileHash", fileHash);
   const response = await axios.get(`https://ipfs.io/ipfs/${fileHash}`, {
     headers: {
       Accept: "application/json",
@@ -57,14 +59,15 @@ export const apiFetchFile = async (
     data = response.data.data;
   }
 
-  // let fileJsonString = null;
+  /*
+   *  TODO: improve file decryption performance
+   */
 
+  // let fileJsonString = null;
   // if (data) {
   //   fileJsonString = await decrypt(data);
   // }
-
   // let fileJson = null;
-
   // if (fileJsonString) {
   //   fileJson = JSON.parse(fileJsonString);
   // }
@@ -84,7 +87,6 @@ const beamApi: AxiosInstance = axios.create({
 export const apiGetProfile = async (
   address: string
 ): Promise<IProfile | null> => {
-  console.log("[apiGetProfile] address", address);
   const response = await beamApi.get(`/${address}`);
 
   let result = null;
@@ -100,7 +102,6 @@ export const apiSetProfile = async (
   address: string,
   profile: IProfile
 ): Promise<boolean | null> => {
-  console.log("[apiSetProfile] address", address);
   const response = await beamApi.post(`/${address}`, { profile });
 
   let result = false;

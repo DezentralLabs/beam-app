@@ -19,9 +19,6 @@ export function navigate(
   params?: NavigationParams,
   action?: NavigationNavigateAction
 ) {
-  console.log("[navigation.ts] navigate => _navigator", _navigator);
-  console.log("[navigation.ts] navigate => routeName", routeName);
-  console.log("[navigation.ts] navigate => params", params);
   if (_navigator) {
     _navigator.dispatch(
       NavigationActions.navigate({
